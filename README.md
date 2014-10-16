@@ -10,3 +10,5 @@ An omnicha.in API will be used to verify addresses added to each profile. The ad
 Once bug and security testing is complete, this plugin may be added to HackForums.net and other major forums will be approached, in order to expand the omnicoin community.
 
 We hope to eventually complete full integration into the forum, including tipping systems, automated upgrade and sticky purchases, etc. But these developments are fully under the disgression of [Omniscient](http://www.hackforums.net/member.php?action=profile&uid=1), and potential security risks related to stored balances/private keys must be considered and solved before these further developments can take place.
+
+The omnicoin.php file needs to be moved into a inc/plugin directory
