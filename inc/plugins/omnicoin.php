@@ -48,6 +48,11 @@ function omnicoin_is_installed()
 	//This should return TRUE if the plugin is installed (by checking tables, fields etc) or FALSE if the plugin is not installed.
 	
 	//Check if the address table is created
+	global $mybb, $db;
+  	if($db->table_exists("omcaddresses"))
+	{
+		return true;
+	}
 }
 
 function omnicoin_uninstall()
