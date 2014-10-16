@@ -68,7 +68,7 @@ function omnicoinprofile
 	//called whenever someone opens there profile. Omnicoin address display field and history button must be added here.
 }
 
-function verifyaddress()
+function verifyaddress($address,$message,$signature)
 {
 	//This is not finished!!!
 	$response = json_decode(file_get_contents("https://omnicha.in/api?method=verifymessage&address=". $address . "&message=" . $message . "&signature=". $signature), true);
