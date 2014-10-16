@@ -36,25 +36,27 @@ function omnicoin_info()
 
 function omnicoin_install()
 {
-
+	//Called whenever a plugin is installed by clicking the "Install" button in the plugin manager.
+	//It is common to create required tables, fields and settings in this function.
 }
 
 function omnicoin_is_installed()
 {
-
+	//Called on the plugin management page to establish if a plugin is already installed or not.
+	//This should return TRUE if the plugin is installed (by checking tables, fields etc) or FALSE if the plugin is not installed.
 }
 
 function omnicoin_uninstall()
 {
-
+	//Called whenever a plugin is to be uninstalled. This should remove ALL traces of the plugin from the installation (tables etc). If it does not exist, uninstall button is not shown.
 }
 
 function omnicoin_activate()
 {
-
+	//Called whenever a plugin is activated via the Admin CP. This should essentially make a plugin "visible" by adding templates/template changes, language changes etc.
 }
 
 function omnicoin_deactivate()
 {
-
+	//Called whenever a plugin is deactivated. This should essentially "hide" the plugin from view by removing templates/template changes etc. It should not, however, remove any information such as tables, fields etc - that should be handled by an _uninstall routine. When a plugin is uninstalled, this routine will also be called before _uninstall() if the plugin is active.
 }
