@@ -77,7 +77,7 @@ function verifyaddress($address,$message,$signature)
 			echo "Error occurred: " . $response['error_info'];
 		} else {
 			$info = $response['response'];
-			echo "Verified: " . $info . "<br>";
+			echo "Verified: " . $info[0];
 		}
 	}
 }
