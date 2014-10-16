@@ -65,5 +65,5 @@ $plugins->add_hook('member_profile_start', 'omnicoinprofile');
 
 function omnicoinprofile
 {
-
+	//called whenever someone opens there profile. Omnicoin address display field and history button must be added here.
 }
