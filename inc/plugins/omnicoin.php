@@ -60,3 +60,10 @@ function omnicoin_deactivate()
 {
 	//Called whenever a plugin is deactivated. This should essentially "hide" the plugin from view by removing templates/template changes etc. It should not, however, remove any information such as tables, fields etc - that should be handled by an _uninstall routine. When a plugin is uninstalled, this routine will also be called before _uninstall() if the plugin is active.
 }
+
+$plugins->add_hook('member_profile_start', 'omnicoinprofile');
+
+function omnicoinprofile
+{
+
+}
