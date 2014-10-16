@@ -1,7 +1,7 @@
 MyBB-Plugin
 ===========
 
-A plugin to integrate Omnicoin into MyBB forums
+A plugin to integrate Omnicoin into MyBB forums.
 
 Project currently under development. The [Omnicoin team](https://github.com/Omnicoin-Project/Omnicoin/wiki/Omnicoin-Team) are working on this project along with [Storm-](http://www.hackforums.net/member.php?action=profile&uid=2206336), who volunteered to provide his experience with MyBB plugins.
 
