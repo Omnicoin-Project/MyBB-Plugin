@@ -38,17 +38,23 @@ function omnicoin_install()
 {
 	//Called whenever a plugin is installed by clicking the "Install" button in the plugin manager.
 	//It is common to create required tables, fields and settings in this function.
+	
+	//Create address table here
 }
 
 function omnicoin_is_installed()
 {
 	//Called on the plugin management page to establish if a plugin is already installed or not.
 	//This should return TRUE if the plugin is installed (by checking tables, fields etc) or FALSE if the plugin is not installed.
+	
+	//Check if the address table is created
 }
 
 function omnicoin_uninstall()
 {
 	//Called whenever a plugin is to be uninstalled. This should remove ALL traces of the plugin from the installation (tables etc). If it does not exist, uninstall button is not shown.
+	
+	//Delete the address table
 }
 
 function omnicoin_activate()
