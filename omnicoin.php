@@ -23,14 +23,14 @@ if(!defined("IN_MYBB"))
 function omnicoin_info()
 {
 	return array(
-		"name"			=> "Omnicoin integration",
+		"name"		=> "Omnicoin integration",
 		"description"	=> "This plugin integrates omnicoin addresses with user profiles",
-		"website"		=> "http://www.omnicoin.org",
-		"author"		=> "MeshCollider",
+		"website"	=> "http://www.omnicoin.org",
+		"author"	=> "MeshCollider",
 		"authorsite"	=> "https://github.com/MeshCollider",
-		"version"		=> "1.0",
-		"guid" 			=> "",
-		"compatibility" => "16*"
+		"version"	=> "1.0",
+		"guid" 		=> "",
+		"compatibility" => "*"
 	);
 }
 
