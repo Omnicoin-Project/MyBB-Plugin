@@ -123,6 +123,9 @@ function omnicointhread
 
 function verifyaddress($address,$message,$signature)
 {
+	//we want a popup box like the rep or report post box
+	//MyBB.popupWindow("omcaddress.php", "Add omnicoin address", 400, 300)
+	
 	$response = json_decode(file_get_contents("https://omnicha.in/api?method=verifymessage&address=". $address . "&message=" . $message . "&signature=". $signature), true);
 	if ($response != null) {
 		if ($response['error']) {
