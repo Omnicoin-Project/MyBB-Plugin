@@ -20,6 +20,17 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.");
 }
 
+// Hooks
+$plugins->add_hook('misc_start','ReferralPlugin_ShowReferrals');
+
+$plugins->add_hook('member_profile_start', 'OmnicoinProfile');
+$plugins->add_hook("member_profile_end", "OmnicoinProfile");
+
+$plugins->add_hook("showthread_start", "omnicointhread");
+$plugins->add_hook("forumdisplay_thread", "omnicointhread");
+
+
+
 function omnicoin_info()
 {
 	return array(
@@ -96,10 +107,7 @@ function omnicoin_deactivate()
 	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title = 'omc_address_profile'");
 }
 
-$plugins->add_hook('member_profile_start', 'omnicoinprofile');
-$plugins->add_hook("member_profile_end", "omnicoinprofile");
-
-function omnicoinprofile
+function OmnicoinProfile
 {
 	//called whenever someone opens there profile.
 	global $db, $mybb, $memprofile, $templates, $omc_address;
@@ -113,14 +121,16 @@ function omnicoinprofile
 	eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
 }
 
-$plugins->add_hook("showthread_start", "omnicointhread");
-$plugins->add_hook("forumdisplay_thread", "omnicointhread");
 
-function omnicointhread
+function OmnicoinThread
 {
 	//called when a thread is viewed.
 }
 
+function OmnicoinThread
+{
+	//called when a thread is viewed.
+}
 function verifyaddress($address,$message,$signature)
 {
 	//we want a popup box like the rep or report post box
