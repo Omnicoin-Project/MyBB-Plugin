@@ -84,17 +84,73 @@ function omnicoin_activate()
 	//Called whenever a plugin is activated via the Admin CP. This should essentially make a plugin "visible" by adding templates/template changes, language changes etc.
 	global $db, $mybb;
 	
-	require MYBB_ROOT."/inc/adminfunctions_templates.php";
+	require_once MYBB_ROOT."/inc/adminfunctions_templates.php";
+
 	$template = array(
 		"title"		=> "omc_address_profile",
 		"template"	=> '<tr>
 		<td class="trow2"><strong>Omnicoin address:</strong></td>
-		<td class="trow2">{$address}&nbsp;<a href="omchistory.php?uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
+		<td class="trow2">{$address}&nbsp;<a href="misc.php?action=omchistory&uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
 		</tr>',
 		"sid"		=> -1
 	);
 	$db->insert_query("templates", $template);
 	find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
+
+    	// create a setting group to house our setting
+    	$OmnicoinPluginSettings = array(
+        "name"            	=> "omnicoin",
+        "title"         	=> "Omnicoin integration",
+        "description"    	=> "Enable or disable the omnicoin plugin.",
+        "disporder"     	=> "0",
+        "isdefault"        	=> "no",
+    	);
+    
+	 // insert the setting group into the database
+    	$db->insert_query("settinggroups", $OmnicoinPluginSettings);
+    
+    	// grab insert ID of the setting group
+    	$gid = intval($db->insert_id());
+    
+    	// we're only going to insert 1 setting
+    	$setting = array(
+        "name"            	=> "OmnicoinPlugin_enabled",
+        "title"            	=> "Enabled",
+        "description"    	=> "Determine if you want to enable this plugin",
+        "optionscode"   	=> "yesno",
+        "value"            	=> "1",
+        "disporder"        	=> 1,
+        "gid"           	=> $gid
+        );
+    
+    	$db->insert_query("settings", $setting);
+    	rebuildsettings();
+    	
+    	$AddressHistoryTemplate = array(
+        "tid"        	=> NULL,
+        "title"        	=> "OmnicoinAddress_History",
+        "template"    	=> '
+	<html>
+    	<head>
+        	<title>Address history</title>
+        	{$headerinclude}
+    	</head>
+    	<body>
+        	{$header}
+        	<h2>Address history for: Member</h2>
+        	<br />
+        	<table class="tborder">
+            		<tr class="thead">
+                		<th><strong>Omnicoin address:</strong></th>
+                		<th><strong>Date added:</strong></th>
+            		</tr>
+            	{$omcaddresses}
+        	</table>
+        	{$footer}
+    	</body>
+	</html>',
+        "sid"        => "-1"
+    	);
 }
 
 function omnicoin_deactivate()
@@ -110,15 +166,22 @@ function omnicoin_deactivate()
 function OmnicoinProfile
 {
 	//called whenever someone opens there profile.
-	global $db, $mybb, $memprofile, $templates, $omc_address;
+	global $db, $templates, $mybb, $memprofile, $templates, $omc_address, $details;
 	
-	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."threads WHERE uid='".$memprofile['uid']."'");
+	// if the plugin setting isn't enabled then exit
+    	if($mybb->settings['OmnicoinPlugin_enabled'] != 1)
+        	return;
+	
+	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$memprofile['uid']."'");
 	if(num_rows($query) > 1)
 	{
 		//add history button	
 	}
+	
+	$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
+	
 	//display current address on profile
-	eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
+	eval("\$omcaddresses = \"".$templates->get("omc_address_profile")."\";");
 }
 
 
