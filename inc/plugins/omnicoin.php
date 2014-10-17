@@ -21,13 +21,13 @@ if(!defined("IN_MYBB"))
 }
 
 // Hooks
-$plugins->add_hook('misc_start','ReferralPlugin_ShowReferrals');
+$plugins->add_hook('misc_start','OmnicoinMisc');
 
 $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
-$plugins->add_hook("member_profile_end", "OmnicoinProfile");
+//$plugins->add_hook('member_profile_end', 'OmnicoinProfile');
 
-$plugins->add_hook("showthread_start", "omnicointhread");
-$plugins->add_hook("forumdisplay_thread", "omnicointhread");
+$plugins->add_hook('showthread_start', 'OmnicoinThread');
+$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
 
 
 
@@ -127,10 +127,12 @@ function OmnicoinThread
 	//called when a thread is viewed.
 }
 
-function OmnicoinThread
+function OmnicoinMisc
 {
-	//called when a thread is viewed.
+	//called on opening misc.php
+	//This is where the address add code and the history list will be displayed
 }
+
 function verifyaddress($address,$message,$signature)
 {
 	//we want a popup box like the rep or report post box
