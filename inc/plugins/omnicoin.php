@@ -84,6 +84,13 @@ function omnicoinprofile
 	//called whenever someone opens there profile. Omnicoin address display field and history button must be added here.
 }
 
+$plugins->add_hook("showthread_start", "omnicointhread");
+
+function omnicointhread
+{
+	//called when a thread is viewed. User omnicoin balances go here.
+}
+
 function verifyaddress($address,$message,$signature)
 {
 	//This is not finished!!!
