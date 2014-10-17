@@ -196,18 +196,51 @@ function OmnicoinMisc
 	//This is where the address add code and the history list will be displayed
 }
 
-function verifyaddress($address,$message,$signature)
-{
-	//we want a popup box like the rep or report post box
-	//MyBB.popupWindow("omcaddress.php", "Add omnicoin address", 400, 300)
+function verifyAddress($address, $message, $signature) {
+	//Returns whether or not the signature is valid for the message for this address (boolean).
+	//Assumes address is already validated.
 	
-	$response = json_decode(file_get_contents("https://omnicha.in/api?method=verifymessage&address=". $address . "&message=" . $message . "&signature=". $signature), true);
+	$response = json_decode(file_get_contents("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), true);
 	if ($response != null) {
-		if ($response['error']) {
-			echo "Error occurred: " . $response['error_info'];
+		if (!$response['error']) {
+			return $response['response']['isvalid'];
 		} else {
-			$info = $response['response'];
-			echo "Verified: " . $info[0];
+			return false;
 		}
+	} else {
+		return false;
 	}
 }
+
+function checkAddress($address) {
+	//Returns whether or not the address is valid (boolean).
+
+	$response = json_decode(file_get_contents("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)), true);
+	if ($response != null) {
+		if (!$response['error']) {
+			return $response['response']['isvalid'];
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
+}
+
+function getAddressBalance($address) {
+	//Returns the balance of the given address (double). 
+	//Assumes address is already validated.
+	
+	$response = json_decode(file_get_contents("https://omnicha.in/api/?method=getbalance"), true);
+	if ($response != null) {
+		if (!$response['error']) {
+			return $response['response']['balance'];
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
+}
+
+
