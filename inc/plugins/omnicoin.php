@@ -44,6 +44,7 @@ function omnicoin_install()
   	if(!$db->table_exists("omcaddresses"))
 	{
 		//create the omcaddress table here.
+		// columns needed: uid, address
 	}
 }
 
@@ -70,31 +71,58 @@ function omnicoin_uninstall()
 function omnicoin_activate()
 {
 	//Called whenever a plugin is activated via the Admin CP. This should essentially make a plugin "visible" by adding templates/template changes, language changes etc.
+	global $db, $mybb;
+	
+	require MYBB_ROOT."/inc/adminfunctions_templates.php";
+	$template = array(
+		"title"		=> "omc_address_profile",
+		"template"	=> '<tr>
+		<td class="trow2"><strong>Omnicoin address:</strong></td>
+		<td class="trow2">{$address}&nbsp;<a href="omchistory.php?uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
+		</tr>',
+		"sid"		=> -1
+	);
+	$db->insert_query("templates", $template);
+	find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
 }
 
 function omnicoin_deactivate()
 {
 	//Called whenever a plugin is deactivated. This should essentially "hide" the plugin from view by removing templates/template changes etc. It should not, however, remove any information such as tables, fields etc - that should be handled by an _uninstall routine. When a plugin is uninstalled, this routine will also be called before _uninstall() if the plugin is active.
-	global $db;
+	global $db, $mybb;
+	
+	include MYBB_ROOT."/inc/adminfunctions_templates.php";
+	find_replace_templatesets("member_profile", "#".preg_quote('{$omc_address_profile}')."#i", '', 0);
+	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title = 'omc_address_profile'");
 }
 
 $plugins->add_hook('member_profile_start', 'omnicoinprofile');
+$plugins->add_hook("member_profile_end", "omnicoinprofile");
 
 function omnicoinprofile
 {
-	//called whenever someone opens there profile. Omnicoin address display field and history button must be added here.
+	//called whenever someone opens there profile.
+	global $db, $mybb, $memprofile, $templates, $omc_address;
+	
+	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."threads WHERE uid='".$memprofile['uid']."'");
+	if(num_rows($query) > 1)
+	{
+		//add history button	
+	}
+	//display current address on profile
+	eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
 }
 
 $plugins->add_hook("showthread_start", "omnicointhread");
+$plugins->add_hook("forumdisplay_thread", "omnicointhread");
 
 function omnicointhread
 {
-	//called when a thread is viewed. User omnicoin balances go here.
+	//called when a thread is viewed.
 }
 
 function verifyaddress($address,$message,$signature)
 {
-	//This is not finished!!!
 	$response = json_decode(file_get_contents("https://omnicha.in/api?method=verifymessage&address=". $address . "&message=" . $message . "&signature=". $signature), true);
 	if ($response != null) {
 		if ($response['error']) {
