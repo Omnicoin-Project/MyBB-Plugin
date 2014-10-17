@@ -39,17 +39,11 @@ function omnicoin_install()
 	//Called whenever a plugin is installed by clicking the "Install" button in the plugin manager.
 	//It is common to create required tables, fields and settings in this function.
 	
-	//Create address table here
 	global $mybb, $db, $cache;
 
   	if(!$db->table_exists("omcaddresses"))
 	{
-		$db->query("CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."omcaddresses` (
-	 	`omcid` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  		`uid` int(10) NOT NULL,
-  		`address` varchar(34) NOT NULL,
-  		PRIMARY KEY (`omcid`)
-		) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
+		//create the omcaddress table here.
 	}
 }
 
