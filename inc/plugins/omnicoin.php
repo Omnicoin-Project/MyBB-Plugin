@@ -183,7 +183,7 @@ function OmnicoinMisc()
 	
 	//Check to see if the user viewing the page is logged in, otherwise return.
 	if (!($mybb->user['uid'])){
-		output("You must be logged in to see this page")
+		echo "You are not logged in";
 		return;
 	}
 	
