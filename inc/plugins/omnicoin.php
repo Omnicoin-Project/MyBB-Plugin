@@ -89,6 +89,7 @@ function omnicoin_uninstall()
 	if($db->table_exists("omcaddresses"))
 	{
 		//delete the table here
+		$db->query("DROP TABLE IF EXISTS `".TABLE_PREFIX."omcaddresses");
 	}
 }
 
