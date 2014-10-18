@@ -151,14 +151,14 @@ function omnicoin_activate()
     	</head>
     	<body>
         	{$header}
-        	<h2>Address history for: Member</h2>
+        	<h2>Address history for: {$username}</h2>
         	<br />
         	<table class="tborder">
             		<tr class="thead">
                 		<th><strong>Omnicoin address:</strong></th>
                 		<th><strong>Date added:</strong></th>
             		</tr>
-            	{$omcaddresses}
+            	{$addresses}
         	</table>
         	{$footer}
     	</body>
