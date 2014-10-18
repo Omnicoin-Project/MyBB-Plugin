@@ -252,17 +252,25 @@ function OmnicoinMisc()
 	}
 }
 
+function grabData($url){
+	curl_setopt($ch=curl_init(), CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+	$output = curl_exec($ch);
+	curl_close($ch);
+	if ($output == null){
+		$output = "An error occurred";
+	}
+	return $output;
+}
+
 function verifyAddress($address, $message, $signature) {
 	//Returns whether or not the signature is valid for the message for this address (boolean).
 	//Assumes address is already validated.
 	
-	$response = json_decode(file_get_contents("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), true);
-	if ($response != null) {
-		if (!$response['error']) {
-			return $response['response']['isvalid'];
-		} else {
-			return false;
-		}
+	$response = json_decode(grabData("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)));
+	if (!$response['error']) {
+		return $response['response']['isvalid'];
 	} else {
 		return false;
 	}
@@ -271,13 +279,9 @@ function verifyAddress($address, $message, $signature) {
 function checkAddress($address) {
 	//Returns whether or not the address is valid (boolean).
 
-	$response = json_decode(file_get_contents("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)), true);
-	if ($response != null) {
-		if (!$response['error']) {
-			return $response['response']['isvalid'];
-		} else {
-			return false;
-		}
+	$response = json_decode(grabData("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)));
+	if (!$response['error']) {
+		return $response['response']['isvalid'];
 	} else {
 		return false;
 	}
@@ -287,16 +291,10 @@ function getAddressBalance($address) {
 	//Returns the balance of the given address (double). 
 	//Assumes address is already validated.
 	
-	$response = json_decode(file_get_contents("https://omnicha.in/api/?method=getbalance"), true);
-	if ($response != null) {
-		if (!$response['error']) {
-			return $response['response']['balance'];
-		} else {
-			return false;
-		}
+	$response = json_decode(grabData("https://omnicha.in/api/?method=getbalance&address=" . urlencode($address)));
+	if (!$response['error']) {
+		return $response['response']['balance'];
 	} else {
 		return false;
 	}
 }
-
-
