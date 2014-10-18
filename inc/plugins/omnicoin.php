@@ -196,9 +196,7 @@ function OmnicoinMisc()
 		if ($mybb->input['action'] == "addomc") {
 			if (isset($mybb->input['address']) && isset($mybb->input['signature'])) {
 				if (checkAddress($mybb->input['address'])) {
-					//$message is the message from the previous paged passed internally
-					$message = "";
-					if (verifyAddress($mybb->input['address'], $message, $mybb->input['signature'])) {
+					if (verifyAddress($mybb->input['address'], $mybb->session['signing-message'], $mybb->input['signature'])) {
 						//Add address to DB and display success message
 					} else {
 						//Display signature invalid message
@@ -209,9 +207,8 @@ function OmnicoinMisc()
 			}
 			
 			$uid = $mybb->user[uid];
-			$message = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
-			//Display AddOmnicoin page with input field for address and signature and display $message for users to sign
-			//Message somehow needs to be passed internally (Possible $_SESSION ?)
+			$mybb->session['signing-message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+			//Display AddOmnicoin page with input field for address and signature and display $mybb->session['signing-message'] for users to sign
 		} else if ($mybb->input['action'] == "omchistory") {
 			if (isset($mybb->input['uid'])) {
 				$uid = $mybb->input['uid']; 
