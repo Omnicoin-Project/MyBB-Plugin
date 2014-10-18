@@ -59,7 +59,7 @@ function omnicoin_install()
   		`id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   		`uid` varchar(10) NOT NULL DEFAULT '',
   		`address` varchar(34) NOT NULL DEFAULT '',
-  		`date` DATE NOT NULL DEFAULT '',
+  		`date` DATE NOT NULL,
 		PRIMARY KEY (`id`)
 ) 		ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
 	}
