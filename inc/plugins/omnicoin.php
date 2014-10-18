@@ -195,9 +195,14 @@ function OmnicoinMisc()
 	if (isset($mybb->input['action'])) {
 		if ($mybb->input['action'] == "addomc") {
 			if (isset($mybb->input['address']) && isset($mybb->input['signature'])) {
-				if (checkAddress($mybb->input['address'])) {
-					if (verifyAddress($mybb->input['address'], $mybb->session['signing-message'], $mybb->input['signature'])) {
-						//Add address to DB and display success message
+				//Whitelist address so user can't inject into DB or API calls
+				$address = preg_replace('/[^A-Za-z0-9]/', '', $mybb->input['address']);
+				$signature = preg_replace('/[^A-Za-z0-9=+-\/]/', '', $mybb->input['signature']));
+				
+				if (checkAddress($address)) {
+					if (verifyAddress($address, $mybb->session['signing-message'], $signature)) {
+						$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
+						//Display success message
 					} else {
 						//Display signature invalid message
 					}
@@ -215,7 +220,7 @@ function OmnicoinMisc()
 			} else {
 				$uid = $mybb->user[uid];
 			}
-			
+			$uid = preg_replace('/[^0-9]/', '', $uid);
 			// get the username corresponding to the UID passed to the miscpage
             		$grabuser = $db->simple_select("users", "username", "uid = ".$uid);
             		$user = $db->fetch_array($grabuser);
