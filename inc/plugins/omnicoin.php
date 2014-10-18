@@ -110,35 +110,6 @@ function omnicoin_activate()
 	);
 	$db->insert_query("templates", $template);
 	find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
-
-    	// create a setting group to house our setting
-    	$OmnicoinPluginSettings = array(
-        "name"            	=> "OmnicoinPluginSettings",
-        "title"         	=> "Omnicoin integration",
-        "description"    	=> "Enable or disable the omnicoin plugin.",
-        "disporder"     	=> "0",
-        "isdefault"        	=> "no",
-    	);
-    
-	 // insert the setting group into the database
-    	$db->insert_query("settinggroups", $OmnicoinPluginSettings);
-    
-    	// grab insert ID of the setting group
-    	$gid = intval($db->insert_id());
-    
-    	// we're only going to insert 1 setting
-    	$setting = array(
-        "name"            	=> "OmnicoinPlugin_enabled",
-        "title"            	=> "Enabled",
-        "description"    	=> "Determine if you want to enable this plugin",
-        "optionscode"   	=> "yesno",
-        "value"            	=> "1",
-        "disporder"        	=> 1,
-        "gid"           	=> $gid
-        );
-    
-    	$db->insert_query("settings", $setting);
-    	rebuildsettings();
     	
     	$AddressHistoryTemplate = array(
         "tid"        	=> NULL,
@@ -181,8 +152,6 @@ function omnicoin_deactivate()
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_History'");
 	
 	$db->delete_query("templates", "title LIKE 'omc_address_profile'");
-	$db->delete_query("settinggroups", "name LIKE 'OmnicoinPluginSettings'");
-	$db->delete_query("settings", "name LIKE 'OmnicoinPlugin_%'");
 }
 
 function OmnicoinProfile()
