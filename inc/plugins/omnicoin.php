@@ -166,8 +166,14 @@ function omnicoin_deactivate()
 	global $db, $mybb;
 	
 	include MYBB_ROOT."/inc/adminfunctions_templates.php";
+	
+	//Delete omnicoin address from profile templae
 	find_replace_templatesets("member_profile", "#".preg_quote('{$omc_address_profile}')."#i", '', 0);
 	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title = 'omc_address_profile'");
+	
+	$db->delete_query("templates", "title LIKE 'omc_address_profile'");
+	$db->delete_query("settinggroups", "name LIKE 'OmnicoinPluginSettings'");
+	$db->delete_query("settings", "name LIKE 'OmnicoinPlugin_%'");
 }
 
 function OmnicoinProfile()
