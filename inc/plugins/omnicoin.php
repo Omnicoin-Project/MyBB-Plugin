@@ -209,7 +209,7 @@ function OmnicoinThread()
 
 function OmnicoinMisc()
 {
-	global $mybb, $db;
+	global $mybb, $db, $template;
 	
 	//Check to see if the user viewing the page is logged in, otherwise return.
 	if (!($mybb->user['uid'])){
