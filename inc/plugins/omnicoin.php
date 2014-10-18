@@ -207,6 +207,11 @@ function OmnicoinMisc()
 {
 	global $mybb, $db;
 	
+	//Check to see if the user viewing the page is logged in, otherwise return.
+	if (!($mybb->user['uid'])){
+		return;
+	}
+	
 	if (isset($_GET['action'])) {
 		if ($_GET['action'] == "addomc") {
 			$uid = $mybb->user[uid];
