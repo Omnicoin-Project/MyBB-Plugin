@@ -216,7 +216,7 @@ function OmnicoinMisc()
 			if (isset($_GET['uid'])) {
 				$uid = preg_replace("/[^0-9]/","", $_GET['uid']); 
 			} else {
-				$uid = $userid = $mybb->user[uid];
+				$uid = $mybb->user[uid];
 			}
 			
 			//Display history for $uid
