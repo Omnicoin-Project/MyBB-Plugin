@@ -183,6 +183,7 @@ function OmnicoinMisc()
 	
 	//Check to see if the user viewing the page is logged in, otherwise return.
 	if (!($mybb->user['uid'])){
+		output("You must be logged in to see this page")
 		return;
 	}
 	
@@ -198,13 +199,13 @@ function OmnicoinMisc()
 			
 		} else if ($mybb->input['action'] == "omchistory") {
 			if (isset($mybb->input['uid'])) {
-				$uid = preg_replace("/[^0-9]/","", $_GET['uid']); 
+				$uid = $mybb->input['uid']); 
 			} else {
 				$uid = $mybb->user[uid];
 			}
 			
 			// get the username corresponding to the UID passed to the miscpage
-            		$grabuser = $db->simple_select("users", "username", "uid = ".$mybb->input['uid']);
+            		$grabuser = $db->simple_select("users", "username", "uid = ".$uid);
             		$user = $db->fetch_array($grabuser);
             		$username = $user['username'];
             
