@@ -60,7 +60,7 @@ function omnicoin_install()
   		`uid` varchar(10) NOT NULL DEFAULT '',
   		`address` varchar(34) NOT NULL DEFAULT '',
   		`date` DATE NOT NULL DEFAULT '',
-		PRIMARY KEY (`ppid`)
+		PRIMARY KEY (`id`)
 ) 		ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
 	}
 }
@@ -240,7 +240,7 @@ function OmnicoinMisc()
             
 			//get all past addresses from table
 			//$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$mybb->input['uid']."'");
-            		$query = $db->simple_select("omcaddresses", "address,date", "iuid = ".$mybb->input['uid']);
+            		$query = $db->simple_select("omcaddresses", "address,date", "uid = ".$mybb->input['uid']);
             		$addresses = '';
             
             		// loop through each row in the database that matches our query and create a table row to display it
