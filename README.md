@@ -21,6 +21,6 @@ Get Address Balance Call: https://omnicha.in/api?method=getbalance&address=ADDRE
 We would also like to add some omnicoin address search ability, but that may be developed later
 
 Contributors:
-- [MeshCollider]
-- [Abraham Lincoln]
+- [MeshCollider](http://www.hackforums.net/member.php?action=profile&uid=2015410)
+- [Abraham Lincoln](http://www.hackforums.net/member.php?action=profile&uid=1256441)
 - [.Matt](http://www.hackforums.net/member.php?action=profile&uid=1354902)
