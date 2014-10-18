@@ -77,12 +77,6 @@ function omnicoin_uninstall()
 	//Called whenever a plugin is to be uninstalled. This should remove ALL traces of the plugin from the installation (tables etc). If it does not exist, uninstall button is not shown.
 	
 	//Delete the address table
-	global $mybb, $db, $cache;
-
-  	if($db->table_exists("omcaddresses"))
-	{
-		//delete the table here
-	}
 }
 
 function omnicoin_activate()
@@ -105,7 +99,7 @@ function omnicoin_activate()
 
     	// create a setting group to house our setting
     	$OmnicoinPluginSettings = array(
-        "name"            	=> "OmnicoinPluginSettings",
+        "name"            	=> "omnicoin",
         "title"         	=> "Omnicoin integration",
         "description"    	=> "Enable or disable the omnicoin plugin.",
         "disporder"     	=> "0",
@@ -169,7 +163,7 @@ function omnicoin_deactivate()
 	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title = 'omc_address_profile'");
 }
 
-function OmnicoinProfile
+function OmnicoinProfile()
 {
 	//called whenever someone opens there profile.
 	global $db, $templates, $mybb, $memprofile, $templates, $omc_address, $details;
@@ -191,15 +185,30 @@ function OmnicoinProfile
 }
 
 
-function OmnicoinThread
+function OmnicoinThread()
 {
 	//called when a thread is viewed.
 }
 
-function OmnicoinMisc
+function OmnicoinMisc()
 {
-	//called on opening misc.php
-	//This is where the address add code and the history list will be displayed
+	global $mybb, $db;
+	
+	if (isset($_GET['action'])) {
+		if ($_GET['action'] == "addomc") {
+			
+			
+			
+		} else if ($_GET['action'] == "omchistory") {
+			if (isset($_GET['uid'])) {
+				$uid = preg_replace("/[^0-9]/","", $_GET['uid']); 
+			} else {
+				$uid = $userid = $mybb->user[uid];
+			}
+			
+			//Display history for $uid
+		}
+	}
 }
 
 function verifyAddress($address, $message, $signature) {
