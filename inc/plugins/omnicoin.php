@@ -212,6 +212,10 @@ function OmnicoinMisc()
 		return;
 	}
 	
+	if($mybb->settings['OmnicoinPlugin_enabled'] != 1) {
+		return;	
+	}
+        	
 	if (isset($mybb->input['action'])) {
 		if ($mybb->input['action'] == "addomc") {
 			$uid = $mybb->user[uid];
