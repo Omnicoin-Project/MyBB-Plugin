@@ -211,7 +211,7 @@ function OmnicoinMisc()
             
 			//get all past addresses from table
 			//$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$mybb->input['uid']."'");
-            		$query = $db->simple_select("omcaddresses", "address,date", "uid = ".$mybb->input['uid']);
+            		$query = $db->simple_select("omcaddresses", "address,date", "uid = ".$uid);
             		$addresses = '';
             
             		// loop through each row in the database that matches our query and create a table row to display it
