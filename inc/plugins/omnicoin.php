@@ -212,14 +212,14 @@ function OmnicoinMisc()
 		return;
 	}
 	
-	if (isset($_GET['action'])) {
-		if ($_GET['action'] == "addomc") {
+	if (isset($mybb->input['action'])) {
+		if ($mybb->input['action'] == "addomc") {
 			$uid = $mybb->user[uid];
 			//Display AddOmnicoin page and verify, etc and save in db
 			//Make sure all input is properly sanitized
 			
-		} else if ($_GET['action'] == "omchistory") {
-			if (isset($_GET['uid'])) {
+		} else if ($mybb->input['action'] == "omchistory") {
+			if (isset($mybb->input['uid'])) {
 				$uid = preg_replace("/[^0-9]/","", $_GET['uid']); 
 			} else {
 				$uid = $mybb->user[uid];
