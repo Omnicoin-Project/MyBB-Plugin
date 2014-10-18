@@ -199,7 +199,7 @@ function OmnicoinMisc()
 			
 		} else if ($mybb->input['action'] == "omchistory") {
 			if (isset($mybb->input['uid'])) {
-				$uid = $mybb->input['uid']); 
+				$uid = $mybb->input['uid']; 
 			} else {
 				$uid = $mybb->user[uid];
 			}
