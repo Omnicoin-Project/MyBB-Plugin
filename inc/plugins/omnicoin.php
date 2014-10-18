@@ -157,18 +157,19 @@ function omnicoin_deactivate()
 function OmnicoinProfile()
 {
 	//called whenever someone opens there profile.
-	global $db, $templates, $mybb, $memprofile, $templates, $omc_address, $details;
+	global $db, $templates, $mybb, $memprofile, $templates, $details;
 	
 	// if the plugin setting isn't enabled then exit
     	if($mybb->settings['OmnicoinPlugin_enabled'] != 1)
         	return;
 	
-	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$memprofile['uid']."'");
-	
-	$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
+	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$mybb->input['uid']."'");
+	$returndata = $db->fetch_array($query);
+	$address = $returndata['address'];
+	//$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
 	
 	//display current address on profile
-	eval("\$omcaddresses = \"".$templates->get("omc_address_profile")."\";");
+	eval("\$address = \"".$templates->get("member_profile")."\";");
 }
 
 
