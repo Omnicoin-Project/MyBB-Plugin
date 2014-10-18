@@ -158,6 +158,7 @@ function omnicoin_activate()
 	</html>',
         "sid"        => "-1"
     	);
+    	$db->insert_query("templates", $AddressHistoryTemplate);
 }
 
 function omnicoin_deactivate()
@@ -169,7 +170,8 @@ function omnicoin_deactivate()
 	
 	//Delete omnicoin address from profile templae
 	find_replace_templatesets("member_profile", "#".preg_quote('{$omc_address_profile}')."#i", '', 0);
-	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title = 'omc_address_profile'");
+	
+	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_History'");
 	
 	$db->delete_query("templates", "title LIKE 'omc_address_profile'");
 	$db->delete_query("settinggroups", "name LIKE 'OmnicoinPluginSettings'");
@@ -186,10 +188,6 @@ function OmnicoinProfile()
         	return;
 	
 	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$memprofile['uid']."'");
-	if(num_rows($query) > 1)
-	{
-		//add history button	
-	}
 	
 	$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
 	
@@ -229,7 +227,27 @@ function OmnicoinMisc()
 				$uid = $mybb->user[uid];
 			}
 			
-			//Display history for $uid using template
+			// get the username corresponding to the UID passed to the miscpage
+            		$grabuser = $db->simple_select("users", "username", "uid = ".$mybb->input['uid']);
+            		$user = $db->fetch_array($grabuser);
+            		$username = $user['username'];
+            
+			//get all past addresses from table
+			//$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$mybb->input['uid']."'");
+            		$query = $db->simple_select("omcaddresses", "address,date", "iuid = ".$mybb->input['uid']);
+            		$addresses = '';
+            
+            		// loop through each row in the database that matches our query and create a table row to display it
+        		 while($row = $db->fetch_array($query)){
+                		$addresses = $addresses."<tr class='trow1'><td>".$row['address']."</td>
+                		<td>".my_date($mybb->settings['dateformat'], $row['date'])."  ".my_date($mybb->settings['timeformat'], $row['date'])."</td>
+        	 		</tr>";
+            		}
+            
+            		// grab our template
+        		$template = $templates->get("OmnicoinAddress_History");
+	            	eval("\$page=\"".$template."\";");
+	            	output_page($page);
 		}
 	}
 }
