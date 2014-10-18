@@ -26,8 +26,8 @@ $plugins->add_hook('misc_start','OmnicoinMisc');
 $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
 //$plugins->add_hook('member_profile_end', 'OmnicoinProfile');
 
-$plugins->add_hook('showthread_start', 'OmnicoinThread');
-$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
+//$plugins->add_hook('showthread_start', 'OmnicoinThread');
+//$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
 
 
 
@@ -209,8 +209,9 @@ function OmnicoinMisc()
 	
 	if (isset($_GET['action'])) {
 		if ($_GET['action'] == "addomc") {
-			
-			
+			$uid = $mybb->user[uid];
+			//Display AddOmnicoin page and verify, etc and save in db
+			//Make sure all input is properly sanitized
 			
 		} else if ($_GET['action'] == "omchistory") {
 			if (isset($_GET['uid'])) {
@@ -219,7 +220,7 @@ function OmnicoinMisc()
 				$uid = $mybb->user[uid];
 			}
 			
-			//Display history for $uid
+			//Display history for $uid using template
 		}
 	}
 }
