@@ -77,6 +77,12 @@ function omnicoin_uninstall()
 	//Called whenever a plugin is to be uninstalled. This should remove ALL traces of the plugin from the installation (tables etc). If it does not exist, uninstall button is not shown.
 	
 	//Delete the address table
+	global $mybb, $db, $cache;
+
+  	if($db->table_exists("omcaddresses"))
+	{
+		//delete the table here
+	}
 }
 
 function omnicoin_activate()
@@ -99,7 +105,7 @@ function omnicoin_activate()
 
     	// create a setting group to house our setting
     	$OmnicoinPluginSettings = array(
-        "name"            	=> "omnicoin",
+        "name"            	=> "OmnicoinPluginSettings",
         "title"         	=> "Omnicoin integration",
         "description"    	=> "Enable or disable the omnicoin plugin.",
         "disporder"     	=> "0",
