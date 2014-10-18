@@ -79,6 +79,7 @@ function omnicoin_uninstall()
 	//Delete the address table
 	global $mybb, $db, $cache;
 
+	//Delete the address table
 	if($db->table_exists("omcaddresses"))
 	{
 		//delete the table here
@@ -96,7 +97,7 @@ function omnicoin_activate()
 		"title"		=> "omc_address_profile",
 		"template"	=> '<tr>
 		<td class="trow2"><strong>Omnicoin address:</strong></td>
-		<td class="trow2">//Delete the address table{$address}&nbsp;<a href="misc.php?action=omchistory&uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
+		<td class="trow2">{$address}&nbsp;<a href="misc.php?action=omchistory&uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
 		</tr>',
 		"sid"		=> -1
 	);
