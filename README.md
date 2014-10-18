@@ -3,7 +3,7 @@ MyBB-Plugin
 
 A plugin to integrate Omnicoin into MyBB forums.
 
-Project currently under development. The [Omnicoin team](https://github.com/Omnicoin-Project/Omnicoin/wiki/Omnicoin-Team) are working on this project along with [Storm-](http://www.hackforums.net/member.php?action=profile&uid=2206336) and [.Matt](http://www.hackforums.net/member.php?action=profile&uid=1354902), who volunteered to provide their experience with PHP and MyBB plugins.
+Project currently under development. The [Omnicoin team](https://github.com/Omnicoin-Project/Omnicoin/wiki/Omnicoin-Team) are working on this project along with [Storm-](http://www.hackforums.net/member.php?action=profile&uid=2206336) who volunteered to provide his experience with MyBB plugins.
 
 An omnicha.in API will be used to verify addresses added to each profile. The address will then be displayed on the profile, with a list of past addresses (which also helps prevent scammers). A "balance" field will be added to the member information on each post.
 
@@ -19,3 +19,8 @@ Verify Address API Call: https://omnicha.in/api?method=checkaddress&address=ADDR
 Get Address Balance Call: https://omnicha.in/api?method=getbalance&address=ADDRESS
 
 We would also like to add some omnicoin address search ability, but that may be developed later
+
+Contributors:
+- [MeshCollider]
+- [Abraham Lincoln]
+- [.Matt](http://www.hackforums.net/member.php?action=profile&uid=1354902)
