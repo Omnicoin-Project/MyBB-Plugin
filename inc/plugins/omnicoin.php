@@ -55,7 +55,13 @@ function omnicoin_install()
   	if(!$db->table_exists("omcaddresses"))
 	{
 		//create the omcaddress table here.
-		// columns needed: uid, address
+		$db->query("CREATE TABLE IF NOT EXISTS `".TABLE_PREFIX."omcaddresses` (
+  		`id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  		`uid` varchar(10) NOT NULL DEFAULT '',
+  		`address` varchar(34) NOT NULL DEFAULT '',
+  		`date` DATE NOT NULL DEFAULT '',
+		PRIMARY KEY (`ppid`)
+) 		ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
 	}
 }
 
