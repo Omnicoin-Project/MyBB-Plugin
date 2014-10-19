@@ -98,19 +98,20 @@ function omnicoin_activate()
 	//Called whenever a plugin is activated via the Admin CP. This should essentially make a plugin "visible" by adding templates/template changes, language changes etc.
 	global $db, $mybb;
 	
-	require_once MYBB_ROOT."/inc/adminfunctions_templates.php";
+	require_once MYBB_ROOT.'/inc/adminfunctions_templates.php';
 
 	$template = array(
+		"tid"		=> NULL,
 		"title"		=> "omc_address_profile",
 		"template"	=> '<tr>
-		<td class="trow2"><strong>Omnicoin address:</strong></td>
-		<td class="trow2">{$address}&nbsp;<a href="misc.php?action=omchistory&uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
+		<td class="trow1"><strong>Omnicoin address:</strong></td>
+		<td class="trow1">{$address}&nbsp;<a href="misc.php?action=omchistory&uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
 		</tr>',
 		"sid"		=> -1
 	);
 	$db->insert_query("templates", $template);
 	//find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
-	find_replace_templatesets("member_profile", '#'.preg_quote('{$groupimage}').'#', "{\$warning_level}{\$omc_address}");
+	find_replace_templatesets("member_profile", '#'.preg_quote('{$warning_level}').'#', "{\$warning_level}{\$omc_address}");
     	
     	$AddressHistoryTemplate = array(
         "tid"        	=> NULL,
@@ -159,7 +160,7 @@ function omnicoin_deactivate()
 function OmnicoinProfile()
 {
 	//called whenever someone opens there profile.
-	global $db, $templates, $mybb, $memprofile, $templates, $details;
+	global $db, $mybb, $memprofile, $templates, $details, $omc_address, $theme;
 	
 	// if the plugin setting isn't enabled then exit
     	if($mybb->settings['OmnicoinPlugin_enabled'] != 1)
@@ -170,7 +171,8 @@ function OmnicoinProfile()
 	$address = $returndata['address'];
 	//$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
 	
-	$omc_address = $address . "[Details]";
+	$template = $templates->get("omc_address_profile");
+	eval("\$omc_address=\"".$template."\";");
 	//display current address on profile
 	//eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
 }
