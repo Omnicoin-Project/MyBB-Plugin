@@ -169,7 +169,7 @@ function OmnicoinProfile()
 	//$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
 	
 	//display current address on profile
-	eval("\$address = \"".$templates->get("member_profile")."\";");
+	eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
 }
 
 
