@@ -139,6 +139,28 @@ function omnicoin_activate()
         "sid"        => "-1"
     	);
     	$db->insert_query("templates", $AddressHistoryTemplate);
+    	
+    	$AddAddressTemplate = array(
+        "tid"        	=> NULL,
+        "title"        	=> "OmnicoinAddress_Add",
+        "template"    	=> '
+	<html>
+    	<head>
+        	<title>Add OMC Address</title>
+        	{$headerinclude}
+    	</head>
+    	<body>
+        	{$header}
+        	<h2>Add OMC Address</h2>
+        	<br />
+        		{$addaddresscode}
+        	</table>
+        	{$footer}
+    	</body>
+	</html>',
+        "sid"        => "-1"
+    	);
+    	$db->insert_query("templates", $AddAddressTemplate);
 }
 
 function omnicoin_deactivate()
@@ -219,6 +241,11 @@ function OmnicoinMisc()
 			$uid = $mybb->user[uid];
 			$mybb->session['signing-message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
 			//Display AddOmnicoin page with input field for address and signature and display $mybb->session['signing-message'] for users to sign
+			$addaddresscode = ''; //this needs to contain the code for the input boxes
+			$template = $templates->get("OmnicoinAddress_Add");
+	            	eval("\$page=\"".$template."\";");
+	            	output_page($page);
+			
 		} else if ($mybb->input['action'] == "omchistory") {
 			if (isset($mybb->input['uid'])) {
 				$uid = $mybb->input['uid']; 
