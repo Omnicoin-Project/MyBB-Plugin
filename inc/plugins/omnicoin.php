@@ -197,7 +197,7 @@ function OmnicoinMisc()
 			if (isset($mybb->input['address']) && isset($mybb->input['signature'])) {
 				//Whitelist address so user can't inject into DB or API calls
 				$address = preg_replace('/[^A-Za-z0-9]/', '', $mybb->input['address']);
-				$signature = preg_replace('/[^A-Za-z0-9=+-\/]/', '', $mybb->input['signature']));
+				$signature = preg_replace('/[^A-Za-z0-9=+-\/]/', '', $mybb->input['signature']);
 				
 				if (checkAddress($address)) {
 					if (verifyAddress($address, $mybb->session['signing-message'], $signature)) {
