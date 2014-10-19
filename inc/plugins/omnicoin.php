@@ -109,7 +109,8 @@ function omnicoin_activate()
 		"sid"		=> -1
 	);
 	$db->insert_query("templates", $template);
-	find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
+	//find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
+	find_replace_templatesets("member_profile", '#'.preg_quote('{$groupimage}').'#', "{\$warning_level}{\$omc_address}");
     	
     	$AddressHistoryTemplate = array(
         "tid"        	=> NULL,
@@ -147,8 +148,9 @@ function omnicoin_deactivate()
 	include MYBB_ROOT."/inc/adminfunctions_templates.php";
 	
 	//Delete omnicoin address from profile templae
-	find_replace_templatesets("member_profile", "#".preg_quote('{$omc_address_profile}')."#i", '', 0);
-	
+	//find_replace_templatesets("member_profile", "#".preg_quote('{$omc_address_profile}')."#i", '', 0);
+	find_replace_templatesets("member_profile", '#'.preg_quote('{$omc_address}').'#', '',0);
+
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_History'");
 	
 	$db->delete_query("templates", "title LIKE 'omc_address_profile'");
@@ -168,8 +170,9 @@ function OmnicoinProfile()
 	$address = $returndata['address'];
 	//$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
 	
+	$omc_address = $address . "[Details]";
 	//display current address on profile
-	eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
+	//eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
 }
 
 
