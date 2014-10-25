@@ -105,13 +105,12 @@ function omnicoin_activate()
 		"title"		=> "omc_address_profile",
 		"template"	=> '<tr>
 		<td class="trow1"><strong>Omnicoin address:</strong></td>
-		<td class="trow1">{$address}&nbsp;<a href="misc.php?action=omchistory&uid={$memprofile[\\\'uid\\\']}">[History]</a></td>
 		</tr>',
 		"sid"		=> -1
 	);
 	$db->insert_query("templates", $template);
 	//find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
-	find_replace_templatesets("member_profile", '#'.preg_quote('{$warning_level}').'#', "{\$warning_level}{\$omc_address}");
+	find_replace_templatesets("member_profile", '#'.preg_quote('{$warning_level}').'#', '{\$warning_level}<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">$address</td></tr>');
     	
     	$AddressHistoryTemplate = array(
         "tid"        	=> NULL,
@@ -172,11 +171,13 @@ function omnicoin_deactivate()
 	
 	//Delete omnicoin address from profile templae
 	//find_replace_templatesets("member_profile", "#".preg_quote('{$omc_address_profile}')."#i", '', 0);
-	find_replace_templatesets("member_profile", '#'.preg_quote('{$omc_address}').'#', '',0);
+	find_replace_templatesets("member_profile", '#'.preg_quote('<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">$address</td></tr>').'#', '',0);
 
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_History'");
 	
 	$db->delete_query("templates", "title LIKE 'omc_address_profile'");
+	
+	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_Add'");
 }
 
 function OmnicoinProfile()
