@@ -24,12 +24,10 @@ if(!defined("IN_MYBB"))
 $plugins->add_hook('misc_start','OmnicoinMisc');
 
 $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
-//$plugins->add_hook('member_profile_end', 'OmnicoinProfile');
 
+//We may need these when we add balance displays to posts. This may cause too many requests to the API though.
 //$plugins->add_hook('showthread_start', 'OmnicoinThread');
 //$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
-
-
 
 function omnicoin_info()
 {
