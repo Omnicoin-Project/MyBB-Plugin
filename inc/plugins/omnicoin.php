@@ -216,7 +216,7 @@ function OmnicoinUserCP()
 
 function OmnicoinMisc()
 {
-	global $mybb, $db, $templates;
+	global $mybb, $db, $templates, $headerinclude, $header, $footer;
 	
 	//Check to see if the user viewing the page is logged in, otherwise return.
 	if (!($mybb->user['uid'])){
