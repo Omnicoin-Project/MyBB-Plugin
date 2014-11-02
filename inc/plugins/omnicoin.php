@@ -102,6 +102,21 @@ function omnicoin_activate()
 
 	find_replace_templatesets("member_profile", '#'.preg_quote('{$warning_level}').'#', '{\$warning_level}<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}</td></tr>');
     	
+    	$OptionsPageTemplate = array(
+    	"tid"        	=> NULL,
+        "title"        	=> "OmnicoinAddress_Edit",
+        "template"    	=> '
+        <br />
+	<fieldset class="trow2">
+	<legend><strong>Omnicoin address</strong></legend>
+	<table cellspacing="0" cellpadding="2">
+	<tr>
+	<td>Add an omnicoin address to your profile</td>
+	</tr>
+	</table>
+	</fieldset>"'
+	);
+	
     	$AddressHistoryTemplate = array(
         "tid"        	=> NULL,
         "title"        	=> "OmnicoinAddress_History",
