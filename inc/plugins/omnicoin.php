@@ -151,7 +151,7 @@ function omnicoin_activate()
     	);
     	$db->insert_query("templates", $AddAddressTemplate);
     	
-    	find_replace_templatesets('usercp_options', "#".preg_quote('<legend><strong>{$lang->login_cookies_privacy}</strong></legend>')."#", '{$omcoptions}<legend><strong>{$lang->login_cookies_privacy}</strong></legend>'); 		
+    	//find_replace_templatesets('usercp_options', "#".preg_quote('<legend><strong>{$lang->login_cookies_privacy}</strong></legend>')."#", '{$omcoptions}<legend><strong>{$lang->login_cookies_privacy}</strong></legend>'); 		
 	
 }
 
@@ -169,7 +169,7 @@ function omnicoin_deactivate()
 	
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_Add'");
 	
-	find_replace_templatesets('usercp_options', "#".preg_quote('{$omcoptions}')."#",'');
+	//find_replace_templatesets('usercp_options', "#".preg_quote('{$omcoptions}')."#",'');
 		
 }
 
@@ -200,9 +200,18 @@ function OmnicoinThread()
 function OmnicoinUserCP()
 {
 	//called when a user opens options page of usercp. Button to open "misc.php?action=addomc" goes here.
-	global $omcoptions,$mybb;	
+	global $omcoptions,$mybb, $customfields;	
 	
-	$omcoptions = '
+	$customfields .= '<br />
+	<fieldset class="trow2"><legend><strong>Omnicoin address</strong></legend>
+	<table cellspacing="0" cellpadding="2">
+	<tr>
+	<td>Add an omnicoin address to your profile</td>
+	</tr>
+	</table>
+	</fieldset>';
+	
+	/*$omcoptions = '
 	<legend><strong>Omnicoin address</strong></legend>
 	<table cellspacing="0" cellpadding="2">
 	<tr>
@@ -210,7 +219,7 @@ function OmnicoinUserCP()
 	</tr>
 	</table>
 	</fieldset><br />
-	<fieldset class="trow2">';
+	<fieldset class="trow2">';*/
 }
 
 function OmnicoinMisc()
