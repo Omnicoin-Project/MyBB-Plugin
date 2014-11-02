@@ -274,6 +274,10 @@ function OmnicoinMisc()
                 		<td>".my_date($mybb->settings['dateformat'], $row['date'])."  ".my_date($mybb->settings['timeformat'], $row['date'])."</td>
         	 		</tr>";
             		}
+            		if($addresses == "")
+            		{
+            			$addresses = "<tr class='trow1'><td>No address history</td></tr>";	
+            		}
             
             		// grab our template
         		$template = $templates->get("OmnicoinAddress_History");
