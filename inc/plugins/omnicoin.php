@@ -25,7 +25,7 @@ $plugins->add_hook('misc_start','OmnicoinMisc');
 
 $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
 
-$plugins->add_hook('usercp_options_start', 'OmnicoinUserCP');
+//$plugins->add_hook('usercp_options_start', 'OmnicoinUserCP');
 
 $plugins->add_hook('usercp_profile_start', 'OmnicoinUserCP');
 
@@ -154,7 +154,7 @@ function omnicoin_activate()
     	$db->insert_query("templates", $AddAddressTemplate);
     	
     	//find_replace_templatesets('usercp_options', "#".preg_quote('<legend><strong>{$lang->login_cookies_privacy}</strong></legend>')."#", '{$omcoptions}<legend><strong>{$lang->login_cookies_privacy}</strong></legend>'); 		
-	
+	find_replace_templatesets('usercp_profile', "#".preg_quote('{$customfields}')."#", '{$omcoptions}{$customfields}'); 
 }
 
 function omnicoin_deactivate()
@@ -171,7 +171,7 @@ function omnicoin_deactivate()
 	
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_Add'");
 	
-	//find_replace_templatesets('usercp_options', "#".preg_quote('{$omcoptions}')."#",'');
+	find_replace_templatesets('usercp_options', "#".preg_quote('{$omcoptions}')."#",'');
 		
 }
 
@@ -202,9 +202,9 @@ function OmnicoinThread()
 function OmnicoinUserCP()
 {
 	//called when a user opens options page of usercp. Button to open "misc.php?action=addomc" goes here.
-	global $omcoptions,$mybb, $customfields;	
+	global $omcoptions,$mybb;	
 	
-	$customfields .= '<br />
+	$omcoptions = '<br />
 	<fieldset class="trow2"><legend><strong>Omnicoin address</strong></legend>
 	<table cellspacing="0" cellpadding="2">
 	<tr>
