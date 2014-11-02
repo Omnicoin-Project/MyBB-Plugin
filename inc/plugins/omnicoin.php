@@ -278,7 +278,7 @@ function OmnicoinMisc()
             		}
             		if($addresses == "")
             		{
-            			$addresses = "<tr class='trow1'><td>No address history</td></tr>";	
+            			$addresses = "<tr class='trow1'><td>No address history</td><td></td></tr>";	
             		}
             
             		// grab our template
