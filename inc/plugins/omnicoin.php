@@ -27,6 +27,8 @@ $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
 
 $plugins->add_hook('usercp_profile_start', 'OmnicoinUserCP');
 
+$plugins->add_hook("datahandler_user_update", "omnicoin_user_update");
+
 //We may need these when we add balance displays to posts. This may cause too many requests to the API though.
 //$plugins->add_hook('showthread_start', 'OmnicoinThread');
 //$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
@@ -209,6 +211,12 @@ function OmnicoinUserCP()
 	</tr>
 	</table>
 	</fieldset>';
+}
+
+function omnicoin_user_update($userhandler)
+{
+	global $mybb,$db;
+	//this is where we will put the code to handle verification and storing of the addresses
 }
 
 function OmnicoinMisc()
