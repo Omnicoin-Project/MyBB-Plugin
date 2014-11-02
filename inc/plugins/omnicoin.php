@@ -217,6 +217,32 @@ function omnicoin_user_update($userhandler)
 {
 	global $mybb,$db;
 	//this is where we will put the code to handle verification and storing of the addresses
+	if($mybb->input['action'] == "do_profile")
+	{
+		if(isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature']))
+		{
+			//Whitelist address so user can't inject into DB or API calls
+			$address = preg_replace('/[^A-Za-z0-9]/', '', $mybb->input['omc_address']);
+			$signature = preg_replace('/[^A-Za-z0-9=+-\/]/', '', $mybb->input['omc_signature']);
+			if (checkAddress($address)) {
+				if (verifyAddress($address, $mybb->session['omc_signing_message'], $signature)) {
+					$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
+					//Display success message
+				} else {
+					//Display signature invalid message
+				}
+			} else {
+				//Display address invalid message
+			}
+		}
+		else
+		{
+			//There was no signature and/or address submitted. Create a new signing message
+			$uid = $mybb->user[uid];
+			$mybb->session['omc_signing_message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+			//Show signing message on page
+		}
+	}
 }
 
 function OmnicoinMisc()
@@ -230,35 +256,7 @@ function OmnicoinMisc()
 	}
 
 	if (isset($mybb->input['action'])) {
-		if ($mybb->input['action'] == "addomc") {
-			if (isset($mybb->input['address']) && isset($mybb->input['signature'])) {
-				//Whitelist address so user can't inject into DB or API calls
-				$address = preg_replace('/[^A-Za-z0-9]/', '', $mybb->input['address']);
-				$signature = preg_replace('/[^A-Za-z0-9=+-\/]/', '', $mybb->input['signature']);
-				
-				if (checkAddress($address)) {
-					if (verifyAddress($address, $mybb->session['signing-message'], $signature)) {
-						$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
-						//Display success message
-					} else {
-						//Display signature invalid message
-					}
-				} else {
-					//Display address invalid message
-				}
-			}
-			else
-			{
-				$uid = $mybb->user[uid];
-				$mybb->session['signing-message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
-				//Display AddOmnicoin page with input field for address and signature and display $mybb->session['signing-message'] for users to sign
-				$addaddresscode = ''; //this needs to contain the code for the input boxes
-				$template = $templates->get("OmnicoinAddress_Add");
-	            		eval("\$page=\"".$template."\";");
-	            		output_page($page);
-			}
-			
-		} else if ($mybb->input['action'] == "omchistory") {
+		if ($mybb->input['action'] == "omchistory") {
 			if (isset($mybb->input['uid'])) {
 				$uid = $mybb->input['uid']; 
 			} else {
