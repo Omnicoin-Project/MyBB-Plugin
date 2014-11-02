@@ -25,6 +25,8 @@ $plugins->add_hook('misc_start','OmnicoinMisc');
 
 $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
 
+$plugins->add_hook('usercp_options_start', 'OmnicoinUserCP');
+
 //We may need these when we add balance displays to posts. This may cause too many requests to the API though.
 //$plugins->add_hook('showthread_start', 'OmnicoinThread');
 //$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
@@ -189,6 +191,11 @@ function OmnicoinThread()
 	//called when a thread is viewed.
 }
 
+function OmnicoinUserCP()
+{
+	//called when a user opens options page of usercp. Button to open "misc.php?action=addomc" goes here.
+}
+
 function OmnicoinMisc()
 {
 	global $mybb, $db, $templates;
@@ -217,14 +224,16 @@ function OmnicoinMisc()
 					//Display address invalid message
 				}
 			}
-			
-			$uid = $mybb->user[uid];
-			$mybb->session['signing-message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
-			//Display AddOmnicoin page with input field for address and signature and display $mybb->session['signing-message'] for users to sign
-			$addaddresscode = ''; //this needs to contain the code for the input boxes
-			$template = $templates->get("OmnicoinAddress_Add");
-	            	eval("\$page=\"".$template."\";");
-	            	output_page($page);
+			else
+			{
+				$uid = $mybb->user[uid];
+				$mybb->session['signing-message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+				//Display AddOmnicoin page with input field for address and signature and display $mybb->session['signing-message'] for users to sign
+				$addaddresscode = ''; //this needs to contain the code for the input boxes
+				$template = $templates->get("OmnicoinAddress_Add");
+	            		eval("\$page=\"".$template."\";");
+	            		output_page($page);
+			}
 			
 		} else if ($mybb->input['action'] == "omchistory") {
 			if (isset($mybb->input['uid'])) {
