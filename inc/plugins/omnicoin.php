@@ -276,7 +276,7 @@ function verifyAddress($address, $message, $signature) {
 	//Returns whether or not the signature is valid for the message for this address (boolean).
 	//Assumes address is already validated.
 	
-	$response = json_decode(grabData("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)));
+	$response = json_decode(grabData("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)),TRUE);
 	if (!$response['error']) {
 		return $response['response']['isvalid'];
 	} else {
@@ -287,7 +287,7 @@ function verifyAddress($address, $message, $signature) {
 function checkAddress($address) {
 	//Returns whether or not the address is valid (boolean).
 
-	$response = json_decode(grabData("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)));
+	$response = json_decode(grabData("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)),TRUE);
 	if (!$response['error']) {
 		return $response['response']['isvalid'];
 	} else {
@@ -299,7 +299,7 @@ function getAddressBalance($address) {
 	//Returns the balance of the given address (double). 
 	//Assumes address is already validated.
 	
-	$response = json_decode(grabData("https://omnicha.in/api/?method=getbalance&address=" . urlencode($address)));
+	$response = json_decode(grabData("https://omnicha.in/api/?method=getbalance&address=" . urlencode($address)),TRUE);
 	if (!$response['error']) {
 		return $response['response']['balance'];
 	} else {
