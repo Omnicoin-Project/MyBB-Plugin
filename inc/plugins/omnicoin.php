@@ -116,7 +116,8 @@ function omnicoin_activate()
 	</table>
 	</fieldset>"'
 	);
-	
+	$db->insert_query("templates", $OptionsPageTemplate);
+    	
     	$AddressHistoryTemplate = array(
         "tid"        	=> NULL,
         "title"        	=> "OmnicoinAddress_History",
