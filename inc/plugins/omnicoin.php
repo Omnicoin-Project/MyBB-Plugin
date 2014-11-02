@@ -211,8 +211,6 @@ function OmnicoinUserCP()
 	</table>
 	</fieldset><br />
 	<fieldset class="trow2">';
-	}
-	
 }
 
 function OmnicoinMisc()
