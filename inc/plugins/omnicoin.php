@@ -25,8 +25,6 @@ $plugins->add_hook('misc_start','OmnicoinMisc');
 
 $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
 
-//$plugins->add_hook('usercp_options_start', 'OmnicoinUserCP');
-
 $plugins->add_hook('usercp_profile_start', 'OmnicoinUserCP');
 
 //We may need these when we add balance displays to posts. This may cause too many requests to the API though.
@@ -153,8 +151,7 @@ function omnicoin_activate()
     	);
     	$db->insert_query("templates", $AddAddressTemplate);
     	
-    	//find_replace_templatesets('usercp_options', "#".preg_quote('<legend><strong>{$lang->login_cookies_privacy}</strong></legend>')."#", '{$omcoptions}<legend><strong>{$lang->login_cookies_privacy}</strong></legend>'); 		
-	find_replace_templatesets('usercp_profile', "#".preg_quote('{$customfields}')."#", '{$omcoptions}{$customfields}'); 
+    	find_replace_templatesets('usercp_profile', "#".preg_quote('{$customfields}')."#", '{$omcoptions}{$customfields}'); 
 }
 
 function omnicoin_deactivate()
@@ -212,16 +209,6 @@ function OmnicoinUserCP()
 	</tr>
 	</table>
 	</fieldset>';
-	
-	/*$omcoptions = '
-	<legend><strong>Omnicoin address</strong></legend>
-	<table cellspacing="0" cellpadding="2">
-	<tr>
-	<td>Add an omnicoin address to your profile</td>
-	</tr>
-	</table>
-	</fieldset><br />
-	<fieldset class="trow2">';*/
 }
 
 function OmnicoinMisc()
