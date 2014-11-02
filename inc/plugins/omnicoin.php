@@ -149,7 +149,10 @@ function omnicoin_activate()
 	</html>',
         "sid"        => "-1"
     	);
-    	$db->insert_query("templates", $AddAddressTemplate);	
+    	$db->insert_query("templates", $AddAddressTemplate);
+    	
+    	find_replace_templatesets('usercp_options', "#".preg_quote('<legend><strong>{$lang->login_cookies_privacy}</strong></legend>')."#", '{$omcoptions}<legend><strong>{$lang->login_cookies_privacy}</strong></legend>'); 		
+	
 }
 
 function omnicoin_deactivate()
@@ -165,6 +168,9 @@ function omnicoin_deactivate()
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_History'");
 	
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_Add'");
+	
+	find_replace_templatesets('usercp_options', "#".preg_quote('{$omcoptions}')."#",'');
+		
 }
 
 function OmnicoinProfile()
@@ -197,15 +203,14 @@ function OmnicoinUserCP()
 	global $omcoptions,$mybb;	
 	
 	$omcoptions = '
-	<br />
-	<fieldset class="trow2">
 	<legend><strong>Omnicoin address</strong></legend>
 	<table cellspacing="0" cellpadding="2">
 	<tr>
 	<td>Add an omnicoin address to your profile</td>
 	</tr>
 	</table>
-	</fieldset>';
+	</fieldset><br />
+	<fieldset class="trow2">';
 	}
 	
 }
