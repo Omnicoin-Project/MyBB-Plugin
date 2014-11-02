@@ -183,11 +183,7 @@ function OmnicoinProfile()
 {
 	//called whenever someone opens there profile.
 	global $db, $mybb, $memprofile, $templates, $details, $omc_address, $theme;
-	
-	// if the plugin setting isn't enabled then exit
-    	if($mybb->settings['OmnicoinPlugin_enabled'] != 1)
-        	return;
-	
+
 	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$mybb->input['uid']."'");
 	$returndata = $db->fetch_array($query);
 	$address = $returndata['address'];
@@ -214,11 +210,7 @@ function OmnicoinMisc()
 		echo "You are not logged in";
 		return;
 	}
-	
-	if($mybb->settings['OmnicoinPlugin_enabled'] != 1) {
-		return;	
-	}
-        	
+
 	if (isset($mybb->input['action'])) {
 		if ($mybb->input['action'] == "addomc") {
 			if (isset($mybb->input['address']) && isset($mybb->input['signature'])) {
