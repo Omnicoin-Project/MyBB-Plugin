@@ -27,6 +27,8 @@ $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
 
 $plugins->add_hook('usercp_options_start', 'OmnicoinUserCP');
 
+$plugins->add_hook('usercp_profile_start', 'OmnicoinUserCP');
+
 //We may need these when we add balance displays to posts. This may cause too many requests to the API though.
 //$plugins->add_hook('showthread_start', 'OmnicoinThread');
 //$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
