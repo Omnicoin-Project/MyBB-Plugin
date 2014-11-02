@@ -100,17 +100,7 @@ function omnicoin_activate()
 	
 	require_once MYBB_ROOT.'/inc/adminfunctions_templates.php';
 
-	$template = array(
-		"tid"		=> NULL,
-		"title"		=> "omc_address_profile",
-		"template"	=> '<tr>
-		<td class="trow1"><strong>Omnicoin address:</strong></td>
-		</tr>',
-		"sid"		=> -1
-	);
-	$db->insert_query("templates", $template);
-	//find_replace_templatesets("member_profile", "#".preg_quote('{$warning_level}')."#i", '{\$warning_level}{\$omc_address_profile}');
-	find_replace_templatesets("member_profile", '#'.preg_quote('{$warning_level}').'#', '{\$warning_level}<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}&nbsp;<a href="misc.php?action=omchistory&amp;uid={$uid}">[History]</a></td></tr>');
+	find_replace_templatesets("member_profile", '#'.preg_quote('{$warning_level}').'#', '{\$warning_level}<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}</td></tr>');
     	
     	$AddressHistoryTemplate = array(
         "tid"        	=> NULL,
@@ -159,7 +149,7 @@ function omnicoin_activate()
 	</html>',
         "sid"        => "-1"
     	);
-    	$db->insert_query("templates", $AddAddressTemplate);
+    	$db->insert_query("templates", $AddAddressTemplate);	
 }
 
 function omnicoin_deactivate()
@@ -170,11 +160,9 @@ function omnicoin_deactivate()
 	include MYBB_ROOT."/inc/adminfunctions_templates.php";
 	
 	//Delete omnicoin address from profile templae
-	find_replace_templatesets("member_profile", '#'.preg_quote('<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}&nbsp;<a href="misc.php?action=omchistory&amp;uid={$uid}">[History]</a></td></tr>').'#', '',0);
+	find_replace_templatesets("member_profile", '#'.preg_quote('<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}</td></tr>').'#', '',0);
 
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_History'");
-	
-	$db->delete_query("templates", "title LIKE 'omc_address_profile'");
 	
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_Add'");
 }
@@ -182,17 +170,19 @@ function omnicoin_deactivate()
 function OmnicoinProfile()
 {
 	//called whenever someone opens there profile.
-	global $db, $mybb, $memprofile, $templates, $details, $omc_address, $theme;
+	global $db, $mybb, $memprofile, $templates, $details, $omc_address, $theme, $address;
 
-	$query = $db->query("SELECT address FROM ".TABLE_PREFIX."omcaddresses WHERE uid='".$mybb->input['uid']."'");
+	$query = $db->simple_select("omcaddresses", "address", "uid=". $mybb->input['uid']);
 	$returndata = $db->fetch_array($query);
-	$address = $returndata['address'];
-	//$details = " <a href=\"misc.php?action=omchistory&uid=".$mybb->input['uid']."\">[History]</a>";
-	
-	$template = $templates->get("omc_address_profile");
-	eval("\$omc_address=\"".$template."\";");
-	//display current address on profile
-	//eval("\$omc_address_profile = \"".$templates->get("omc_address_profile")."\";");
+	$address = $returndata['address'];	
+	if($address == "")
+	{
+		$address = "None specified";
+	}
+	else
+	{
+		$address = $address . '&nbsp;<a href="misc.php?action=omchistory&amp;uid=' . $mybb->input['uid'] . '">[History]</a>';
+	}
 }
 
 
