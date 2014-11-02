@@ -181,6 +181,8 @@ function omnicoin_deactivate()
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_History'");
 	
 	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_Add'");
+	
+	$db->delete_query("templates", "title LIKE 'OmnicoinAddress_Edit'");
 }
 
 function OmnicoinProfile()
