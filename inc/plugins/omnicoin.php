@@ -195,19 +195,34 @@ function OmnicoinProfile()
 
 function OmnicoinThread()
 {
-	//called when a thread is viewed.
+	//called when a thread is viewed. This may be needed when we implement balances on posts.
 }
 
 function OmnicoinUserCP()
 {
 	//called when a user opens options page of usercp. Button to open "misc.php?action=addomc" goes here.
-	global $omcoptions,$mybb;	
+	global $omcoptions, $mybb, $omcerrormessage;	
 	
+	$uid = $mybb->user[uid];
+	$mybb->session['omc_signing_message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+			
 	$omcoptions = '<br />
 	<fieldset class="trow2"><legend><strong>Omnicoin address</strong></legend>
 	<table cellspacing="0" cellpadding="2">
 	<tr>
+	<td>{$omcerrormessage}</td>
+	</tr>
+	<tr>
 	<td>Add an omnicoin address to your profile</td>
+	</tr>
+	<tr>
+	<td>Address:</td><td><input type="text" class="textbox" size="34" maxlength="34" name="omc_address" /></td>
+	</tr>
+	<tr>
+	<td>Signing message:</td><td>'. $mybb->session['omc_signing_message'] .'</td></td>
+	</tr>
+	<tr>
+	<td>Signature:</td><td><input type="text" class="textbox" size="40" maxlength="100" name="omc_signature" /></td>
 	</tr>
 	</table>
 	</fieldset>';
@@ -228,19 +243,20 @@ function omnicoin_user_update($userhandler)
 				if (verifyAddress($address, $mybb->session['omc_signing_message'], $signature)) {
 					$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
 					//Display success message
+					$omcerrormessage = 'Success!';
 				} else {
 					//Display signature invalid message
+					$omcerrormessage = 'Error: Invalid signature';
 				}
 			} else {
 				//Display address invalid message
+				$omcerrormessage = 'Error: Invalid address';
 			}
 		}
-		else
+		else if(isset($mybb->input['omc_address']))
 		{
-			//There was no signature and/or address submitted. Create a new signing message
-			$uid = $mybb->user[uid];
-			$mybb->session['omc_signing_message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
-			//Show signing message on page
+			//There was no signature submitted.
+			$omcerrormessage = 'Error: Please enter the signature';
 		}
 	}
 }
