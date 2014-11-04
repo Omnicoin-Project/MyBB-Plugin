@@ -204,7 +204,7 @@ function OmnicoinUserCP()
 	global $omcoptions, $mybb, $omcerrormessage, $omc_signing_message;	
 
 	$uid = $mybb->user[uid];
-	/*$mybb->session['omc_signing_message'] = */$omc_signing_message = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+	/*$mybb->session['omc_signing_message'] = */$_SESSION['omc_signing_message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
 			
 	$omcoptions = '<br />
 	<fieldset class="trow2"><legend><strong>Omnicoin address</strong></legend>
@@ -216,7 +216,7 @@ function OmnicoinUserCP()
 	<td>Address:</td><td><input type="text" class="textbox" size="34" maxlength="34" name="omc_address" /></td>
 	</tr>
 	<tr>
-	<td>Signing message:</td><td>'. $omc_signing_message .'</td></td>
+	<td>Signing message:</td><td>'. $_SESSION['omc_signing_message'] .'</td></td>
 	</tr>
 	<tr>
 	<td>Signature:</td><td><input type="text" class="textbox" size="40" maxlength="70" name="omc_signature" /></td>
@@ -237,7 +237,7 @@ function omnicoin_user_update($userhandler)
 			$address = preg_replace('/[^A-Za-z0-9]/', '', $mybb->input['omc_address']);
 			$signature = preg_replace('/[^A-Za-z0-9=+-\/]/', '', $mybb->input['omc_signature']);
 			if (checkAddress($address)) {
-				if (verifyAddress($address, /*$mybb->session['omc_signing_message']*/$omc_signing_message, $signature)) {
+				if (verifyAddress($address, /*$mybb->session['omc_signing_message'] $omc_signing_message*/$_SESSION['omc_signing_message'], $signature)) {
 					$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
 					//Display success message
 					$omcerrormessage = 'Success!';
@@ -309,6 +309,7 @@ function OmnicoinMisc()
 	}
 }
 
+//This function isnt working.
 function grabData($url){
 	curl_setopt($ch=curl_init(), CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -337,7 +338,7 @@ function checkAddress($address) {
 	//Returns whether or not the address is valid (boolean).
 
 	$response = json_decode(grabData("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)),TRUE);
-
+  
 	if (!$response['error']) {
 		return $response['response']['isvalid'];
 	} else {
