@@ -257,7 +257,7 @@ function OmnicoinMisc() {
 	
 			// loop through each row in the database that matches our query and create a table row to display it
 			while($row = $db->fetch_array($query)){
-				$addresses = $addresses . "<tr class='trow1'><td><a target='_blank' href='" . $row['address'] . "'>" . $row['address'] . "</a></td><td>" . $row['date'] . "</td></tr>";
+				$addresses = $addresses . "<tr class='trow1'><td><a target='_blank' href='https://omnicha.in?address=" . $row['address'] . "'>" . $row['address'] . "</a></td><td>" . $row['date'] . "</td></tr>";
 			}
 			
 			if ($addresses == "") {
