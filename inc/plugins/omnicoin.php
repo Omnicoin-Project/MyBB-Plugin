@@ -38,7 +38,7 @@ function omnicoin_info() {
 		"description"	=> "This plugin integrates omnicoin addresses with user profiles",
 		"website"	=> "http://www.omnicoin.org",
 		"author"	=> "Omnicoin Team",
-		"authorsite"	=> "https://github.com/Omnicoin-Project/MyBB-Plugin",
+		"authorsite"	=> "https://github.com/Omnicoin-Project/Omnicoin/wiki/Omnicoin-Team",
 		"version"	=> "1.0",
 		"guid" 		=> "",
 		"compatibility" => "*"
