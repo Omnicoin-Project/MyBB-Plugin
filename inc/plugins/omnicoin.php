@@ -149,7 +149,7 @@ function OmnicoinProfile() {
 	if ($address == "") {
 		$address = "None specified";
 	} else {
-		$address = $address . '&nbsp;<a href="misc.php?action=omchistory&amp;uid=' . $mybb->input['uid'] . '">[History]</a>';
+		$address = "<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . '&nbsp;<a href="misc.php?action=omchistory&amp;uid=' . $mybb->input['uid'] . '">[History]</a>';
 	}
 }
 
@@ -230,7 +230,7 @@ function omnicoin_user_update($userhandler) {
 
 function OmnicoinMisc() {
 	//Handle misc.php funtionality
-	global $mybb, $db, $templates;
+	global $mybb, $db, $templates, $headerinclude, $header, $footer;
 	
 	//Check to see if the user viewing the page is logged in, otherwise return.
 	if (!($mybb->user['uid'])) {
@@ -257,7 +257,7 @@ function OmnicoinMisc() {
 	
 			// loop through each row in the database that matches our query and create a table row to display it
 			while($row = $db->fetch_array($query)){
-				$addresses = $addresses . "<tr class='trow1'><td>".$row['address']."</td><td>" . $row['date'] . "</td></tr>";
+				$addresses = $addresses . "<tr class='trow1'><td><a target='_blank' href='" . $row['address'] . "'>" . $row['address'] . "</a></td><td>" . $row['date'] . "</td></tr>";
 			}
 			
 			if ($addresses == "") {
