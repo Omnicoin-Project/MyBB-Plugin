@@ -204,7 +204,9 @@ function OmnicoinUserCP()
 	global $omcoptions, $mybb, $omcerrormessage, $omc_signing_message;	
 
 	$uid = $mybb->user[uid];
+	session_start();
 	/*$mybb->session['omc_signing_message'] = */$_SESSION['omc_signing_message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+	$omc_signing_message = $_SESSION['omc_signing_message'];
 			
 	$omcoptions = '<br />
 	<fieldset class="trow2"><legend><strong>Omnicoin address</strong></legend>
@@ -231,6 +233,8 @@ function omnicoin_user_update($userhandler)
 	//this is where we will put the code to handle verification and storing of the addresses
 	if($mybb->input['action'] == "do_profile")
 	{
+		session_start();
+
 		if(isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature']))
 		{
 			//Whitelist address so user can't inject into DB or API calls
@@ -241,23 +245,25 @@ function omnicoin_user_update($userhandler)
 					$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
 					//Display success message
 					$omcerrormessage = 'Success!';
-					
 				} else {
 					//Display signature invalid message
 					$omcerrormessage = 'Error: Invalid signature';
-					
 				}
 			} else {
 				//Display address invalid message
 				$omcerrormessage = 'Error: Invalid address';
-				
 			}
 		}
 		else if(isset($mybb->input['omc_address']))
 		{
 			//There was no signature submitted.
-			$omcerrormessage = 'Error: Please enter the signature';
-			
+			$omcerrormessage = 'Error: Please enter the signature';		
+		}
+		if($omcerrormessage != "")
+		{
+			echo '<script language="javascript">';
+			echo 'alert("'. $omcerrormessage .'")';
+			echo '</script>';
 		}
 	}
 }
@@ -338,7 +344,7 @@ function checkAddress($address) {
 	//Returns whether or not the address is valid (boolean).
 
 	$response = json_decode(grabData("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)),TRUE);
-  
+	
 	if (!$response['error']) {
 		return $response['response']['isvalid'];
 	} else {
