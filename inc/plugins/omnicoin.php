@@ -34,13 +34,13 @@ $plugins->add_hook("datahandler_user_update", "omnicoin_user_update");
 
 function omnicoin_info() {
 	return array(
-		"name"			=> "Omnicoin integration",
+		"name"		=> "Omnicoin integration",
 		"description"	=> "This plugin integrates omnicoin addresses with user profiles",
-		"website"		=> "http://www.omnicoin.org",
-		"author"		=> "MeshCollider",
-		"authorsite"	=> "https://github.com/MeshCollider",
-		"version"		=> "1.0",
-		"guid" 			=> "",
+		"website"	=> "http://www.omnicoin.org",
+		"author"	=> "Omnicoin Team",
+		"authorsite"	=> "https://github.com/Omnicoin-Project/MyBB-Plugin",
+		"version"	=> "1.0",
+		"guid" 		=> "",
 		"compatibility" => "*"
 	);
 }
