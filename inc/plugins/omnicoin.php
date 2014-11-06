@@ -24,9 +24,11 @@ $plugins->add_hook('misc_start','OmnicoinMisc');
 
 $plugins->add_hook('member_profile_start', 'OmnicoinProfile');
 
-$plugins->add_hook('usercp_profile_start', 'OmnicoinUserCP');
+$plugins->add_hook('usercp_profile_start', 'OmnicoinUserCPProfile');
 
 $plugins->add_hook("datahandler_user_update", "omnicoin_user_update");
+
+$plugins->add_hook('usercp_start', 'OmnicoinUserCP');
 
 //We may need these when we add balance displays to posts. This may cause too many requests to the API though.
 //$plugins->add_hook('showthread_start', 'OmnicoinThread');
@@ -122,6 +124,7 @@ function omnicoin_activate() {
     	
 	find_replace_templatesets("member_profile", '#' . preg_quote('{$warning_level}') . '#', '{$warning_level}<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}</td></tr>');
 	find_replace_templatesets("usercp_profile", '#' . preg_quote('{$customfields}') . '#', '{$omcoptions}{$customfields}');
+	find_replace_templatesets("usercp", '#' . preg_quote('{$referral_info}') . '#', '{$omcaddressusercp}{$referral_info}');
 }
 
 function omnicoin_deactivate() {
@@ -136,6 +139,7 @@ function omnicoin_deactivate() {
 	//Delete omnicoin address from profile template
 	find_replace_templatesets("member_profile", '#' . preg_quote('<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}</td></tr>') . '#', '');
 	find_replace_templatesets("usercp_profile", '#' . preg_quote('{$omcoptions}') . '#', '');
+	find_replace_templatesets("usercp", '#' . preg_quote('{$omcaddressusercp}') . '#', '');
 }
 
 function OmnicoinProfile() {
@@ -145,7 +149,8 @@ function OmnicoinProfile() {
 
 	$query = $db->simple_select("omcaddresses", "address", "uid = '" . $mybb->input['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
 	$returndata = $db->fetch_array($query);
-	$address = $returndata['address'];	
+	$address = $returndata['address'];
+	
 	if ($address == "") {
 		$address = "None specified";
 	} else {
@@ -158,7 +163,7 @@ function OmnicoinThread() {
 	//called when a thread is viewed. This may be needed when we implement balances on posts.
 }
 
-function OmnicoinUserCP() {
+function OmnicoinUserCPProfile() {
 	//called when a user opens options page of usercp.
 	
 	global $db, $omcoptions, $mybb;
@@ -191,6 +196,21 @@ function OmnicoinUserCP() {
 		</tr>
 	</table>
 </fieldset>';
+}
+
+function OmnicoinUserCP() {
+	global $db, $omcaddressusercp, $mybb;
+	
+	$query = $db->simple_select("omcaddresses", "address", "uid = '" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
+	$returndata = $db->fetch_array($query);
+	$address = $returndata['address'];	
+	
+	if ($address == "") {
+		$address = "None specified";
+	} else {
+		$address = "<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>";
+	}
+	$omcaddressusercp = "<strong>Omnicoin address: </strong>" . $address . "<br />";
 }
 
 function omnicoin_user_update($userhandler) {
