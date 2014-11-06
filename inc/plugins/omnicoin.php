@@ -192,7 +192,7 @@ function omnicoin_postbit(&$post) {
 	global $db;
 
 	$balance = omnicoin_get_user_balance($post['uid']);
-	var_dump($balance);
+
 	if ($balance != -1) {
 		$post['user_details'] .= "<br />OMC balance: " . $balance . " OMC";
 	}
@@ -378,7 +378,6 @@ function checkAddress($addr) {
     $check = strtoupper(hash("sha256", hash("sha256", $check, true)));
     $check = substr($check, 0, 8);
 	
-	var_dump($check == substr($addr, strlen($addr) - 8));
     return $check == substr($addr, strlen($addr) - 8);
 }
 
