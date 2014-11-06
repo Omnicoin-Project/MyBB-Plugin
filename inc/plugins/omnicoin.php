@@ -145,11 +145,11 @@ function omnicoin_get_user_balance($uid) {
 	if ($query->num_rows == 1) {
 		$data = $db->fetch_array($query);
 		if (time() - strtotime($data['lastupdate']) < 3600) { //Cache balances for 1 hour
-			return $data['balance'];
+			return format_num($data['balance'], 4);
 		} else {
 			$balance = getAddressBalance($data['address']);
 			$db->update_query("omcaddresses", array("balance" => $balance, "lastupdate" => date("Y-m-d H:i:s")), "id = '" . $data['id'] . "'");
-			return $balance;
+			return format_num($balance, 4);
 		}
 	}
 	return -1;
@@ -194,7 +194,7 @@ function omnicoin_postbit(&$post) {
 	$balance = omnicoin_get_user_balance($post['uid']);
 
 	if ($balance != -1) {
-		$post['user_details'] .= "<br />OMC balance: " . $balance . " OMC";
+		$post['user_details'] .= "<br />OMC balance: " . $balance;
 	}
 }
 
