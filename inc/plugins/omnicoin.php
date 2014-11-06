@@ -53,7 +53,7 @@ function omnicoin_install() {
 			`uid` varchar(10) NOT NULL DEFAULT '',
 			`address` varchar(34) NOT NULL DEFAULT '',
 			`date` DATETIME NOT NULL,
-			`balance` decimal(10,0)	NOT NULL DEFAULT 0,
+			`balance` decimal	NOT NULL DEFAULT 0,
 			`lastupdate` DATETIME NOT NULL,
 			PRIMARY KEY (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
@@ -138,9 +138,9 @@ function omnicoin_deactivate() {
 }
 
 function omnicoin_get_user_balance($uid) {
-	global $db, $mybb;
+	global $db;
 
-	$query = $db->simple_select("omcaddresses", "id, address, balance, lastupdate", "uid = '" . $mybb->input['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
+	$query = $db->simple_select("omcaddresses", "id, address, balance, lastupdate", "uid = '" . $uid . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
 
 	if ($query->num_rows == 1) {
 		$data = $db->fetch_array($query);
@@ -152,7 +152,7 @@ function omnicoin_get_user_balance($uid) {
 			return $balance;
 		}
 	}
-	return 0;
+	return -1;
 }
 
 function omnicoin_member_profile_start() {
@@ -165,7 +165,7 @@ function omnicoin_member_profile_start() {
 	if ($query->num_rows == 1) {
 		$returndata = $db->fetch_array($query);
 		$omcaddress = $returndata['address'];
-		$omcbalance = omnicoin_get_user_balance($returndata['address']);
+		$omcbalance = omnicoin_get_user_balance($mybb->input['uid']);
 		
 		$omcaddress = "<tr>
 	<td class='trow1'>
@@ -191,12 +191,10 @@ function omnicoin_postbit(&$post) {
 	//Called when a post is displayed
 	global $db;
 
-	$query = $db->simple_select("omcaddresses", "address", "uid='" . $post['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
-	if ($query->num_rows == 1) {
-		$returndata = $db->fetch_array($query);
-		$balance = omnicoin_get_user_balance($returndata['address']);
-
-		$post['user_details'] .= "<br />OMC balance: " . $balance;
+	$balance = omnicoin_get_user_balance($post['uid']);
+	var_dump($balance);
+	if ($balance != -1) {
+		$post['user_details'] .= "<br />OMC balance: " . $balance . " OMC";
 	}
 }
 
@@ -207,6 +205,7 @@ function omnicoin_usercp_profile_start() {
 
 	$uid = $mybb->user[uid];
 	session_start();
+
 	$_SESSION['omc_signing_message'] = $mybb->settings['bbname'] . " Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
 	
 	$query = $db->simple_select("omcaddresses", "address", "uid='" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
@@ -363,19 +362,71 @@ function verifyAddress($address, $message, $signature) {
 	}
 }
 
-function checkAddress($address) {
+function checkAddress($addr) {
 	//Returns whether or not the address is valid (boolean).
 
-	$response = json_decode(grabData("https://omnicha.in/api?method=checkaddress&address=" . urlencode($address)), TRUE);
-	if ($response) {
-		if (!$response['error']) {
-			return $response['response']['isvalid'];
-		} else {
-			return false;
-		}
-	} else {
+	$addr = decodeBase58($addr);
+    if (strlen($addr) != 50) {
 		return false;
-	}
+    }
+    $version = substr($addr, 0, 2);
+    if (hexdec($version) != 115) {
+		return false;
+    }
+    $check = substr($addr, 0, strlen($addr) - 8);
+    $check = pack("H*", $check);
+    $check = strtoupper(hash("sha256", hash("sha256", $check, true)));
+    $check = substr($check, 0, 8);
+	
+	var_dump($check == substr($addr, strlen($addr) - 8));
+    return $check == substr($addr, strlen($addr) - 8);
+}
+
+function decodeBase58($base58) {
+	$base58chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    $origbase58 = $base58;
+	
+    //only valid chars allowed
+    if (preg_match('/[^1-9A-HJ-NP-Za-km-z]/', $base58)) {
+      return "";
+    }
+	
+    $return = "0";
+    for ($i = 0; $i < strlen($base58); $i++) {
+      $current = (string) strpos($base58chars, $base58[$i]);
+      $return = (string) bcmul($return, "58", 0);
+      $return = (string) bcadd($return, $current, 0);
+    }
+
+    $return = encodeHex($return);
+	
+    //leading zeros
+    for ($i = 0; $i < strlen($origbase58) && $origbase58[$i] == "1"; $i++) {
+      $return = "00" . $return;
+    }
+
+    if (strlen($return) % 2 != 0) {
+      $return = "0" . $return;
+    }
+
+    return $return;
+}
+
+function encodeHex($dec) {
+	$hexchars = "0123456789ABCDEF";
+    $return = "";
+    while (bccomp($dec, 0) == 1) {
+		$dv = (string) bcdiv($dec, "16", 0);
+		$rem = (integer) bcmod($dec, "16");
+		$dec = $dv;
+		$return = $return . $hexchars[$rem];
+    }
+    return strrev($return);
+}
+
+function format_num($val, $precision = 10) {
+	$to_return = rtrim(rtrim(number_format(round($val, $precision), $precision), "0"), ".");
+	return $to_return == "" ? "0" : $to_return;
 }
 
 function getAddressBalance($address) {
