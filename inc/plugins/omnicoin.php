@@ -20,19 +20,12 @@ if (!defined("IN_MYBB")) {
 }
 
 // Hooks
-$plugins->add_hook('misc_start','OmnicoinMisc');
-
-$plugins->add_hook('member_profile_start', 'OmnicoinProfile');
-
-$plugins->add_hook('usercp_profile_start', 'OmnicoinUserCPProfile');
-
+$plugins->add_hook("misc_start", "omnicoin_misc_start");
+$plugins->add_hook("member_profile_start", "omnicoin_member_profile_start");
+$plugins->add_hook("usercp_profile_start", "omnicoin_usercp_profile_start");
 $plugins->add_hook("datahandler_user_update", "omnicoin_user_update");
-
-$plugins->add_hook('usercp_start', 'OmnicoinUserCP');
-
-//We may need these when we add balance displays to posts. This may cause too many requests to the API though.
-//$plugins->add_hook('showthread_start', 'OmnicoinThread');
-//$plugins->add_hook('forumdisplay_thread', 'OmnicoinThread');
+$plugins->add_hook("usercp_start", "omnicoin_usercp_start");
+$plugins->add_hook("postbit", "omnicoin_postbit");
 
 function omnicoin_info() {
 	return array(
@@ -56,10 +49,12 @@ function omnicoin_install() {
   	if (!$db->table_exists("omcaddresses")) {
 		//create the omcaddress table here.
 		$db->query("CREATE TABLE IF NOT EXISTS `" . TABLE_PREFIX . "omcaddresses` (
-			`id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+			`id` smallint(10) unsigned NOT NULL AUTO_INCREMENT,
 			`uid` varchar(10) NOT NULL DEFAULT '',
 			`address` varchar(34) NOT NULL DEFAULT '',
 			`date` DATETIME NOT NULL,
+			`balance` decimal(10,0)	NOT NULL DEFAULT 0,
+			`lastupdate` DATETIME NOT NULL,
 			PRIMARY KEY (`id`)
 			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
 	}
@@ -109,10 +104,10 @@ function omnicoin_activate() {
 		<h2>Address history for: {$username}</h2>
 		<br />
 		<table class="tborder">
-				<tr class="thead">
-					<th><strong>Omnicoin address:</strong></th>
-					<th><strong>Date added:</strong></th>
-				</tr>
+			<tr class="thead">
+				<th><strong>Omnicoin address:</strong></th>
+				<th><strong>Date added:</strong></th>
+			</tr>
 			{$addresses}
 		</table>
 		{$footer}
@@ -122,9 +117,9 @@ function omnicoin_activate() {
 		
     $db->insert_query("templates", $AddressHistoryTemplate);
     	
-	find_replace_templatesets("member_profile", '#' . preg_quote('{$warning_level}') . '#', '{$warning_level}<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}</td></tr>');
-	find_replace_templatesets("usercp_profile", '#' . preg_quote('{$customfields}') . '#', '{$omcoptions}{$customfields}');
-	find_replace_templatesets("usercp", '#' . preg_quote('{$referral_info}') . '#', '{$omcaddressusercp}{$referral_info}');
+	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", '{$warning_level}{$omcaddress}');
+	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", '{$omcoptions}{$customfields}');
+	find_replace_templatesets("usercp", "#" . preg_quote('{$referral_info}') . "#", '{$omcaddressusercp}{$referral_info}');
 }
 
 function omnicoin_deactivate() {
@@ -137,33 +132,75 @@ function omnicoin_deactivate() {
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address History'");
 	
 	//Delete omnicoin address from profile template
-	find_replace_templatesets("member_profile", '#' . preg_quote('<tr><td class="trow1"><strong>Omnicoin address:</strong></td><td class="trow1">{$address}</td></tr>') . '#', '');
-	find_replace_templatesets("usercp_profile", '#' . preg_quote('{$omcoptions}') . '#', '');
-	find_replace_templatesets("usercp", '#' . preg_quote('{$omcaddressusercp}') . '#', '');
+	find_replace_templatesets("member_profile", "#" . preg_quote('{$omcaddress}') . "#", "");
+	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$omcoptions}') . "#", "");
+	find_replace_templatesets("usercp", "#" . preg_quote('{$omcaddressusercp}') . "#", "");
 }
 
-function OmnicoinProfile() {
+function omnicoin_get_user_balance($uid) {
+	global $db, $mybb;
+
+	$query = $db->simple_select("omcaddresses", "id, address, balance, lastupdate", "uid = '" . $mybb->input['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
+
+	if ($query->num_rows == 1) {
+		$data = $db->fetch_array($query);
+		if (time() - strtotime($data['lastupdate']) < 3600) { //Cache balances for 1 hour
+			return $data['balance'];
+		} else {
+			$balance = getAddressBalance($data['address']);
+			$db->update_query("omcaddresses", array("balance" => $balance, "lastupdate" => date("Y-m-d H:i:s")), "id = '" . $data['id'] . "'");
+			return $balance;
+		}
+	}
+	return 0;
+}
+
+function omnicoin_member_profile_start() {
 	//called whenever someone opens their profile.
 	
-	global $db, $mybb, $address;
+	global $db, $mybb, $omcaddress;
 
 	$query = $db->simple_select("omcaddresses", "address", "uid = '" . $mybb->input['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
-	$returndata = $db->fetch_array($query);
-	$address = $returndata['address'];
 	
-	if ($address == "") {
-		$address = "None specified";
-	} else {
-		$address = "<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . '&nbsp;<a href="misc.php?action=omchistory&amp;uid=' . $mybb->input['uid'] . '">[History]</a>';
+	if ($query->num_rows == 1) {
+		$returndata = $db->fetch_array($query);
+		$omcaddress = $returndata['address'];
+		$omcbalance = omnicoin_get_user_balance($returndata['address']);
+		
+		$omcaddress = "<tr>
+	<td class='trow1'>
+		<strong>Omnicoin Address:</strong>
+	</td>
+	<td class='trow1'>
+		<a target='_blank' href='https://omnicha.in?address=" . $omcaddress . "'>" . $omcaddress . "</a>&nbsp;[<a href='misc.php?action=omchistory&amp;uid=" . $mybb->input['uid'] . "'>History</a>]
+	</td>
+</tr>
+<tr>
+	<td class='trow1'>
+		<strong>Omnicoin Balance:</strong>
+	</td>
+	<td class='trow1'>
+		" . $omcbalance . " OMC
+	</td>
+</tr>";
 	}
 }
 
 
-function OmnicoinThread() {
-	//called when a thread is viewed. This may be needed when we implement balances on posts.
+function omnicoin_postbit(&$post) {
+	//Called when a post is displayed
+	global $db;
+
+	$query = $db->simple_select("omcaddresses", "address", "uid='" . $post['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
+	if ($query->num_rows == 1) {
+		$returndata = $db->fetch_array($query);
+		$balance = omnicoin_get_user_balance($returndata['address']);
+
+		$post['user_details'] .= "<br />OMC balance: " . $balance;
+	}
 }
 
-function OmnicoinUserCPProfile() {
+function omnicoin_usercp_profile_start() {
 	//called when a user opens options page of usercp.
 	
 	global $db, $omcoptions, $mybb;
@@ -173,44 +210,49 @@ function OmnicoinUserCPProfile() {
 	$_SESSION['omc_signing_message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
 	
 	$query = $db->simple_select("omcaddresses", "address", "uid='" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
-	$returndata = $db->fetch_array($query);
-	$address = $returndata['address'];	
+	if ($query->num_rows == 1) {
+		$returndata = $db->fetch_array($query);
+		$address = $returndata['address'];	
+	} else {
+		$address = "";
+	}
 	
-	$omcoptions = '<br />
-<fieldset class="trow2">
+	$omcoptions = "<br />
+<fieldset class='trow2'>
 	<legend>
 		<strong>Omnicoin address</strong>
 	</legend>
-	<table cellspacing="0" cellpadding="2">
+	<table cellspacing='0' cellpadding='2'>
 		<tr>
 			<td colspan=2>Add an omnicoin address to your profile</td>
 		</tr>
 		<tr>
-			<td>Address:</td><td><input type="text" class="textbox" size="40" name="omc_address" value="' . ($address != "" ? $address : "") . '" /></td>
+			<td>Address:</td><td><input type='text' class='textbox' size='40' name='omc_address' value='" . ($address != "" ? $address : "") . "' /></td>
 		</tr>
 		<tr>
-			<td>Signing message:</td><td>' . $_SESSION['omc_signing_message'] . '</td></td>
+			<td>Signing message:</td><td>" . $_SESSION['omc_signing_message'] . "</td></td>
 		</tr>
 		<tr>
-			<td>Signature:</td><td><input type="text" class="textbox" size="40" name="omc_signature" /></td>
+			<td>Signature:</td><td><input type='text' class='textbox' size='40' name='omc_signature' /></td>
 		</tr>
 	</table>
-</fieldset>';
+</fieldset>";
 }
 
-function OmnicoinUserCP() {
+function omnicoin_usercp_start() {
 	global $db, $omcaddressusercp, $mybb;
 	
 	$query = $db->simple_select("omcaddresses", "address", "uid = '" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
-	$returndata = $db->fetch_array($query);
-	$address = $returndata['address'];	
-	
-	if ($address == "") {
-		$address = "None specified";
+	if ($query->num_rows) {
+		$returndata = $db->fetch_array($query);
+		$address = $returndata['address'];	
+		
+		$address = "<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='misc.php?action=omchistory&amp;uid=" . $mybb->user['uid'] . "'>History</a>]";
+
+		$omcaddressusercp = "<strong>Omnicoin address: </strong>" . $address . "<br />";
 	} else {
-		$address = "<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>";
+		$omcaddressusercp = "";
 	}
-	$omcaddressusercp = "<strong>Omnicoin address: </strong>" . $address . "<br />";
 }
 
 function omnicoin_user_update($userhandler) {
@@ -223,38 +265,37 @@ function omnicoin_user_update($userhandler) {
 		$omcerrormessage = "";
 		if (isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature']) && !empty($mybb->input['omc_address'])) {
 			//Whitelist address so user can't inject into DB or API calls
-			$address = preg_replace('/[^A-Za-z0-9]/', '', $mybb->input['omc_address']);
-			$signature = preg_replace('/[^A-Za-z0-9=+-\/]/', '', $mybb->input['omc_signature']);
+			$address = preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['omc_address']);
+			$signature = preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']);
 			if (checkAddress($address)) {
 				if (verifyAddress($address, $_SESSION['omc_signing_message'], $signature)) {
 					$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
 					//Display success message
-					//$omcerrormessage = 'Success!';
+					//$omcerrormessage = "Success!";
 				} else {
 					//Display signature invalid message
-					$omcerrormessage = 'Error: Invalid Omnicoin address signature';
+					$omcerrormessage = "Error: Invalid Omnicoin address signature";
 				}
 			} else {
 				//Display address invalid message
-				$omcerrormessage = 'Error: Invalid Omnicoin address';
+				$omcerrormessage = "Error: Invalid Omnicoin address";
 			}
 		}
 		
 		if ($omcerrormessage != "") {
-			echo '<script language="javascript">';
-			echo 'alert("'. $omcerrormessage .'")';
-			echo '</script>';
+			echo "<script language='javascript'>";
+			echo "alert('" . $omcerrormessage . "')";
+			echo "</script>";
 		}
 	}
 }
 
-function OmnicoinMisc() {
+function omnicoin_misc_start() {
 	//Handle misc.php funtionality
 	global $mybb, $db, $templates, $headerinclude, $header, $footer;
 	
 	//Check to see if the user viewing the page is logged in, otherwise return.
 	if (!($mybb->user['uid'])) {
-		echo "You are not logged in";
 		return;
 	}
 
@@ -265,7 +306,7 @@ function OmnicoinMisc() {
 			} else {
 				$uid = $mybb->user[uid];
 			}
-			$uid = preg_replace('/[^0-9]/', '', $uid);
+			$uid = preg_replace("/[^0-9]/", "", $uid);
 			// get the username corresponding to the UID passed to the miscpage
 			$grabuser = $db->simple_select("users", "username", "uid = " . $uid);
 			$user = $db->fetch_array($grabuser);
@@ -273,7 +314,7 @@ function OmnicoinMisc() {
 	
 			//get all past addresses from table
 			$query = $db->simple_select("omcaddresses", "address,date", "uid = '" . $uid . "'", array("order_by" => "date", "order_dir" => "ASC"));
-			$addresses = '';
+			$addresses = "";
 	
 			// loop through each row in the database that matches our query and create a table row to display it
 			while($row = $db->fetch_array($query)){
@@ -308,7 +349,7 @@ function verifyAddress($address, $message, $signature) {
 	//Assumes address is already validated.
 	
 	//Fix for PHP thinking that + is multiple strings there are multiple strings
-	$signature = preg_replace('/[+]/', '%2B', $signature);
+	$signature = preg_replace("/[+]/", "%2B", $signature);
 	
 	$response = json_decode(grabData("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), TRUE);
 	if ($response) {
@@ -346,9 +387,9 @@ function getAddressBalance($address) {
 		if (!$response['error']) {
 			return $response['response']['balance'];
 		} else {
-			return false;
+			return 0;
 		}
 	} else {
-		return false;
+		return 0;
 	}
 }
