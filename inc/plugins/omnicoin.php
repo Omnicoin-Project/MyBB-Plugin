@@ -207,7 +207,7 @@ function omnicoin_usercp_profile_start() {
 
 	$uid = $mybb->user[uid];
 	session_start();
-	$_SESSION['omc_signing_message'] = "Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+	$_SESSION['omc_signing_message'] = $mybb->settings['bbname'] . " Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
 	
 	$query = $db->simple_select("omcaddresses", "address", "uid='" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
 	if ($query->num_rows == 1) {
