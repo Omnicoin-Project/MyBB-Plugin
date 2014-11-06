@@ -223,7 +223,7 @@ function omnicoin_usercp_profile_start() {
 	</legend>
 	<table cellspacing='0' cellpadding='2'>
 		<tr>
-			<td colspan=2>Add an omnicoin address to your profile</td>
+			<td colspan=2>Add an omnicoin address to your profile. Follow <a href='https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin'>this tutorial</a>.</td>
 		</tr>
 		<tr>
 			<td>Address:</td><td><input type='text' class='textbox' size='40' name='omc_address' value='" . ($address != "" ? $address : "") . "' /></td>
