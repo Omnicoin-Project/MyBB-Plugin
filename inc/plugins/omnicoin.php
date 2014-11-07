@@ -168,7 +168,7 @@ function omnicoin_activate() {
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", '{$warning_level}{$omcaddress}');
 	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", '{$omcoptions}{$customfields}');
 	find_replace_templatesets("usercp", "#" . preg_quote('{$referral_info}') . "#", '{$omcaddressusercp}{$referral_info}');
-	find_replace_templatesets("header", "#" . preg_quote('{$menu_calendar}') . "#", '{$menu_calendar}<li><a href="{$mybb->settings[\'bburl\']}/misc.php?action=omcsearch" class="search">OMC Search</a></li>');
+	find_replace_templatesets("header", "#" . preg_quote('{$menu_memberlist}') . "#", '{$menu_memberlist}<li><a href="{$mybb->settings[\'bburl\']}/misc.php?action=omcsearch" class="search">OMC Search</a></li>');
 }
 
 function omnicoin_deactivate() {
