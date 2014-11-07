@@ -29,13 +29,13 @@ $plugins->add_hook("postbit", "omnicoin_postbit");
 
 function omnicoin_info() {
 	return array(
-		"name"		=> "Omnicoin integration",
+		"name"			=> "Omnicoin integration",
 		"description"	=> "This plugin integrates omnicoin addresses with user profiles",
-		"website"	=> "http://www.omnicoin.org",
-		"author"	=> "Omnicoin Team",
+		"website"		=> "http://www.omnicoin.org",
+		"author"		=> "Omnicoin Team",
 		"authorsite"	=> "https://github.com/Omnicoin-Project/Omnicoin/wiki/Omnicoin-Team",
-		"version"	=> "1.0",
-		"guid" 		=> "",
+		"version"		=> "1.0",
+		"guid" 			=> "",
 		"compatibility" => "*"
 	);
 }
@@ -90,11 +90,11 @@ function omnicoin_activate() {
 	global $db;
 	
 	require_once MYBB_ROOT . '/inc/adminfunctions_templates.php';
-    	
-    $AddressHistoryTemplate = array(
-        "tid"        	=> NULL,
-        "title"        	=> "Omnicoin Address History",
-        "template"    	=> '<html>
+		
+	$AddressHistoryTemplate = array(
+		"tid"			=> NULL,
+		"title"			=> "Omnicoin Address History",
+		"template"		=> '<html>
 	<head>
 		<title>Address history</title>
 		{$headerinclude}
@@ -113,10 +113,10 @@ function omnicoin_activate() {
 		{$footer}
 	</body>
 </html>',
-        "sid"        => "-1");
+		"sid"			=> "-1");
 		
-    $db->insert_query("templates", $AddressHistoryTemplate);
-    	
+	$db->insert_query("templates", $AddressHistoryTemplate);
+		
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", '{$warning_level}{$omcaddress}');
 	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", '{$omcoptions}{$customfields}');
 	find_replace_templatesets("usercp", "#" . preg_quote('{$referral_info}') . "#", '{$omcaddressusercp}{$referral_info}');
@@ -145,11 +145,11 @@ function omnicoin_get_user_balance($uid) {
 	if ($query->num_rows == 1) {
 		$data = $db->fetch_array($query);
 		if (time() - strtotime($data['lastupdate']) < 3600) { //Cache balances for 1 hour
-			return format_num($data['balance'], 4);
+			return omnicoin_formatNumber($data['balance'], 4);
 		} else {
-			$balance = getAddressBalance($data['address']);
+			$balance = omnicoin_getAddressBalance($data['address']);
 			$db->update_query("omcaddresses", array("balance" => $balance, "lastupdate" => date("Y-m-d H:i:s")), "id = '" . $data['id'] . "'");
-			return format_num($balance, 4);
+			return omnicoin_formatNumber($balance, 4);
 		}
 	}
 	return -1;
@@ -266,8 +266,8 @@ function omnicoin_user_update($userhandler) {
 			//Whitelist address so user can't inject into DB or API calls
 			$address = preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['omc_address']);
 			$signature = preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']);
-			if (checkAddress($address)) {
-				if (verifyAddress($address, $_SESSION['omc_signing_message'], $signature)) {
+			if (omnicoin_checkAddress($address)) {
+				if (omnicoin_verifyAddress($address, $_SESSION['omc_signing_message'], $signature)) {
 					$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
 					//Display success message
 					//$omcerrormessage = "Success!";
@@ -332,7 +332,7 @@ function omnicoin_misc_start() {
 	}
 }
 
-function grabData($url){
+function omnicoin_grabData($url){
 	curl_setopt($ch = curl_init(), CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 2);
@@ -343,14 +343,14 @@ function grabData($url){
 	return $output;
 }
 
-function verifyAddress($address, $message, $signature) {
+function omnicoin_verifyAddress($address, $message, $signature) {
 	//Returns whether or not the signature is valid for the message for this address (boolean).
 	//Assumes address is already validated.
 	
 	//Fix for PHP thinking that + is multiple strings there are multiple strings
 	$signature = preg_replace("/[+]/", "%2B", $signature);
 	
-	$response = json_decode(grabData("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), TRUE);
+	$response = json_decode(omnicoin_grabData("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), TRUE);
 	if ($response) {
 		if (!$response['error']) {
 			return $response['response']['isvalid'];
@@ -362,77 +362,77 @@ function verifyAddress($address, $message, $signature) {
 	}
 }
 
-function checkAddress($addr) {
+function omnicoin_checkAddress($addr) {
 	//Returns whether or not the address is valid (boolean).
 
-	$addr = decodeBase58($addr);
-    if (strlen($addr) != 50) {
+	$addr = omnicoin_decodeBase58($addr);
+	if (strlen($addr) != 50) {
 		return false;
-    }
-    $version = substr($addr, 0, 2);
-    if (hexdec($version) != 115) {
+	}
+	$version = substr($addr, 0, 2);
+	if (hexdec($version) != 115) {
 		return false;
-    }
-    $check = substr($addr, 0, strlen($addr) - 8);
-    $check = pack("H*", $check);
-    $check = strtoupper(hash("sha256", hash("sha256", $check, true)));
-    $check = substr($check, 0, 8);
+	}
+	$check = substr($addr, 0, strlen($addr) - 8);
+	$check = pack("H*", $check);
+	$check = strtoupper(hash("sha256", hash("sha256", $check, true)));
+	$check = substr($check, 0, 8);
 	
-    return $check == substr($addr, strlen($addr) - 8);
+	return $check == substr($addr, strlen($addr) - 8);
 }
 
-function decodeBase58($base58) {
+function omnicoin_decodeBase58($base58) {
 	$base58chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-    $origbase58 = $base58;
+	$origbase58 = $base58;
 	
-    //only valid chars allowed
-    if (preg_match('/[^1-9A-HJ-NP-Za-km-z]/', $base58)) {
-      return "";
-    }
+	//only valid chars allowed
+	if (preg_match('/[^1-9A-HJ-NP-Za-km-z]/', $base58)) {
+		return "";
+	}
 	
-    $return = "0";
-    for ($i = 0; $i < strlen($base58); $i++) {
-      $current = (string) strpos($base58chars, $base58[$i]);
-      $return = (string) bcmul($return, "58", 0);
-      $return = (string) bcadd($return, $current, 0);
-    }
+	$return = "0";
+	for ($i = 0; $i < strlen($base58); $i++) {
+		$current = (string) strpos($base58chars, $base58[$i]);
+		$return = (string) bcmul($return, "58", 0);
+		$return = (string) bcadd($return, $current, 0);
+	}
 
-    $return = encodeHex($return);
-	
-    //leading zeros
-    for ($i = 0; $i < strlen($origbase58) && $origbase58[$i] == "1"; $i++) {
-      $return = "00" . $return;
-    }
+	$return = omnicoin_encodeHex($return);
 
-    if (strlen($return) % 2 != 0) {
-      $return = "0" . $return;
-    }
+	//leading zeros
+	for ($i = 0; $i < strlen($origbase58) && $origbase58[$i] == "1"; $i++) {
+		$return = "00" . $return;
+	}
 
-    return $return;
+	if (strlen($return) % 2 != 0) {
+		$return = "0" . $return;
+	}
+
+	return $return;
 }
 
-function encodeHex($dec) {
+function omnicoin_encodeHex($dec) {
 	$hexchars = "0123456789ABCDEF";
-    $return = "";
-    while (bccomp($dec, 0) == 1) {
+	$return = "";
+	while (bccomp($dec, 0) == 1) {
 		$dv = (string) bcdiv($dec, "16", 0);
 		$rem = (integer) bcmod($dec, "16");
 		$dec = $dv;
 		$return = $return . $hexchars[$rem];
-    }
-    return strrev($return);
+	}
+	return strrev($return);
 }
 
-function format_num($val, $precision = 10) {
+function omnicoin_formatNumber($val, $precision = 10) {
 	$to_return = rtrim(rtrim(number_format(round($val, $precision), $precision), "0"), ".");
 	return $to_return == "" ? "0" : $to_return;
 }
 
-function getAddressBalance($address) {
+function omnicoin_getAddressBalance($address) {
 	//Returns the balance of the given address (double). 
 	//Assumes address is already validated.
 	
-	$response = json_decode(grabData("https://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
+	$response = json_decode(omnicoin_grabData("https://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
 	if ($response) {
 		if (!$response['error']) {
 			return $response['response']['balance'];
