@@ -15,9 +15,6 @@ Primary Contributors:
 - [MeshCollider](http://www.hackforums.net/member.php?action=profile&uid=2015410)
 - [Abraham Lincoln](http://www.hackforums.net/member.php?action=profile&uid=1256441)
 
-Thanks to:
-- [.Matt](http://www.hackforums.net/member.php?action=profile&uid=1354902)
-- [Crypto™](http://hackforums.net/member.php?action=profile&uid=1088934)
-
+Also, thanks must go to [.Matt](http://www.hackforums.net/member.php?action=profile&uid=1354902) and [Crypto™](http://hackforums.net/member.php?action=profile&uid=1088934) for their help and support of the plugin development.
 
 You can view the plugin in action on http://omnicoinforum.host22.com/, which we are using to test the plugin.
