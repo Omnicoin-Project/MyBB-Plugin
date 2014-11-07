@@ -115,7 +115,7 @@ function omnicoin_activate() {
 </html>',
         "sid"        => "-1");
 		
-    $db->insert_query("templates", $AddressHistoryTemplate);
+	$db->insert_query("templates", $AddressHistoryTemplate);
     	
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", '{$warning_level}{$omcaddress}');
 	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", '{$omcoptions}{$customfields}');
