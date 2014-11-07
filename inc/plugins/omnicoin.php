@@ -29,13 +29,13 @@ $plugins->add_hook("postbit", "omnicoin_postbit");
 
 function omnicoin_info() {
 	return array(
-		"name"			=> "Omnicoin integration",
+		"name"		=> "Omnicoin integration",
 		"description"	=> "This plugin integrates omnicoin addresses with user profiles",
-		"website"		=> "http://www.omnicoin.org",
-		"author"		=> "Omnicoin Team",
+		"website"	=> "http://www.omnicoin.org",
+		"author"	=> "Omnicoin Team",
 		"authorsite"	=> "https://github.com/Omnicoin-Project/Omnicoin/wiki/Omnicoin-Team",
-		"version"		=> "1.0",
-		"guid" 			=> "",
+		"version"	=> "v1.0",
+		"guid" 		=> "",
 		"compatibility" => "*"
 	);
 }
