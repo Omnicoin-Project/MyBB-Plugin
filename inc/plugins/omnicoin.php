@@ -34,7 +34,7 @@ function omnicoin_info() {
 		"website"	=> "http://www.omnicoin.org",
 		"author"	=> "Omnicoin Team",
 		"authorsite"	=> "https://github.com/Omnicoin-Project/Omnicoin/wiki/Omnicoin-Team",
-		"version"	=> "v1.0",
+		"version"	=> "v1.0.0",
 		"guid" 		=> "",
 		"compatibility" => "*"
 	);
