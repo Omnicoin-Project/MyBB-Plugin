@@ -242,7 +242,7 @@ function omnicoin_usercp_start() {
 	global $db, $omcaddressusercp, $mybb;
 	
 	$query = $db->simple_select("omcaddresses", "address", "uid = '" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
-	if ($query->num_rows) {
+	if ($query->num_rows == 1) {
 		$returndata = $db->fetch_array($query);
 		$address = $returndata['address'];	
 		
@@ -268,7 +268,7 @@ function omnicoin_user_update($userhandler) {
 			$signature = preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']);
 			if (omnicoin_checkAddress($address)) {
 				if (omnicoin_verifyAddress($address, $_SESSION['omc_signing_message'], $signature)) {
-					$db->query("INSERT INTO ".TABLE_PREFIX."omcaddresses (uid, address, date) VALUES ('" . $mybb->user['uid'] . "', '" . $address . "', '" . date("Y-m-d H:i:s") . "')");
+					$db->insert_query("omcaddresses", array("uid" => $mybb->user['uid'], "address" => $address, "date" => date("Y-m-d H:i:s")));
 					//Display success message
 					//$omcerrormessage = "Success!";
 				} else {
@@ -307,23 +307,22 @@ function omnicoin_misc_start() {
 			}
 			$uid = preg_replace("/[^0-9]/", "", $uid);
 			// get the username corresponding to the UID passed to the miscpage
-			$grabuser = $db->simple_select("users", "username", "uid = " . $uid);
+			$grabuser = $db->simple_select("users", "username", "uid = '" . $uid . "'");
 			$user = $db->fetch_array($grabuser);
 			$username = $user['username'];
 	
 			//get all past addresses from table
-			$query = $db->simple_select("omcaddresses", "address,date", "uid = '" . $uid . "'", array("order_by" => "date", "order_dir" => "ASC"));
+			$query = $db->simple_select("omcaddresses", "address, date", "uid = '" . $uid . "'", array("order_by" => "date", "order_dir" => "ASC"));
 			$addresses = "";
-	
-			// loop through each row in the database that matches our query and create a table row to display it
-			while($row = $db->fetch_array($query)){
-				$addresses = $addresses . "<tr class='trow1'><td><a target='_blank' href='https://omnicha.in?address=" . $row['address'] . "'>" . $row['address'] . "</a></td><td>" . $row['date'] . "</td></tr>";
+			if ($query->num_rows > 0) {
+				// loop through each row in the database that matches our query and create a table row to display it
+				while($row = $db->fetch_array($query)){
+					$addresses = $addresses . "<tr class='trow1'><td><a target='_blank' href='https://omnicha.in?address=" . $row['address'] . "'>" . $row['address'] . "</a></td><td>" . $row['date'] . "</td></tr>";
+				}
+			} else {
+				$addresses = "<tr class='trow1'><td>No address history</td></tr>";	
 			}
-			
-			if ($addresses == "") {
-				$addresses = "<tr class='trow1'><td>No address history</td><td></td></tr>";	
-			}
-	
+		
 			// grab our template
 			$template = $templates->get("Omnicoin Address History");
 			eval("\$page=\"" . $template . "\";");
