@@ -96,7 +96,7 @@ function omnicoin_activate() {
 		"title"			=> "Omnicoin Address History",
 		"template"		=> '<html>
 	<head>
-		<title>Address history</title>
+		<title>Omnicoin Address History</title>
 		{$headerinclude}
 	</head>
 	<body>
@@ -248,7 +248,7 @@ function omnicoin_usercp_start() {
 		
 		$address = "<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='misc.php?action=omchistory&amp;uid=" . $mybb->user['uid'] . "'>History</a>]";
 
-		$omcaddressusercp = "<strong>Omnicoin address: </strong>" . $address . "<br />";
+		$omcaddressusercp = "<strong>Omnicoin Address: </strong>" . $address . "<br />";
 	} else {
 		$omcaddressusercp = "";
 	}
@@ -321,7 +321,7 @@ function omnicoin_misc_start() {
 			}
 			
 			if ($addresses == "") {
-				$addresses = "<tr class='trow1'><td>No address history</td><td></td></tr>";	
+				$addresses = "<tr class='trow1'><td>No Omnicoin addresses have been added to this account</td><td></td></tr>";	
 			}
 	
 			// grab our template
