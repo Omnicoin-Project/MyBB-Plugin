@@ -212,12 +212,12 @@ function omnicoin_member_profile_start() {
 	
 	global $db, $mybb, $omcaddress;
 
-	$query = $db->simple_select("omcaddresses", "address", "uid = '" . $mybb->input['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
+	$query = $db->simple_select("omcaddresses", "address", "uid = '" . intval($mybb->input['uid']) . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
 	
 	if ($query->num_rows == 1) {
 		$returndata = $db->fetch_array($query);
 		$omcaddress = $returndata['address'];
-		$omcbalance = omnicoin_get_user_balance($mybb->input['uid']);
+		$omcbalance = omnicoin_get_user_balance(intval($mybb->input['uid']));
 		
 		$omcaddress = "<tr>
 	<td class='trow1'>
@@ -316,8 +316,9 @@ function omnicoin_user_update($userhandler) {
 		$omcerrormessage = "";
 		if (isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature']) && !empty($mybb->input['omc_address'])) {
 			//Whitelist address so user can't inject into DB or API calls
-			$address = preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['omc_address']);
-			$signature = preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']);
+			$address = $db->escape_string($mybb->input['omc_address']);
+			$signature = $db->escape_string($mybb->input['omc_signature']);
+			
 			if (omnicoin_checkAddress($address)) {
 				if (omnicoin_verifyAddress($address, $_SESSION['omc_signing_message'], $signature)) {
 					$db->insert_query("omcaddresses", array("uid" => $mybb->user['uid'], "address" => $address, "date" => date("Y-m-d H:i:s")));
@@ -357,7 +358,7 @@ function omnicoin_misc_start() {
 			} else {
 				$uid = $mybb->user[uid];
 			}
-			$uid = preg_replace("/[^0-9]/", "", $uid);
+			$uid = intval($uid);
 			// get the username corresponding to the UID passed to the miscpage
 			$grabuser = $db->simple_select("users", "username", "uid = '" . $uid . "'");
 			$user = $db->fetch_array($grabuser);
@@ -382,8 +383,7 @@ function omnicoin_misc_start() {
 			output_page($page);
 		} else if ($mybb->input['action'] == "omcsearch") {
 			if (isset($mybb->input['search'])) {
-				$search = preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['search']);
-
+				$search = $db->escape_string($mybb->input['search']);
 				//Get all addresses matching search term
 				$query = $db->simple_select("omcaddresses", "address, date, uid", "address LIKE CONCAT('%', '" . $search . "', '%')", array("order_by" => "date", "order_dir" => "ASC"));
 				$addresses = "";
