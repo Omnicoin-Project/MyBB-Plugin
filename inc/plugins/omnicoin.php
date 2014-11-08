@@ -120,6 +120,12 @@ function omnicoin_activate() {
 		"title"			=> "Omnicoin Address History Entry",
 		"template"		=> '<tr class="trow1"><td><a target="_blank" href="https://omnicha.in?address={$address}">{$address}</a></td><td>{$date}</td></tr>',
 		"sid"			=> "-1"));
+		
+	$db->insert_query("templates", array(
+		"tid"			=> NULL,
+		"title"			=> "Omnicoin Address History No Entry",
+		"template"		=> '<tr class="trow1"><td colspan=2>{$message}</td></tr>',
+		"sid"			=> "-1"));
 				
 	$db->insert_query("templates", array(
 		"tid"			=> NULL,
@@ -172,6 +178,12 @@ function omnicoin_activate() {
 		"title"			=> "Omnicoin Address Search Results Entry",
 		"template"		=> '<tr class="trow1"><td><a href="member.php?action=profile&uid={$userid}">{$username}</td><td><a target="_blank" href="https://omnicha.in?address={$address}">{$address}</a></td><td>{$date}</td></tr>',
 		"sid"			=> "-1"));
+		
+	$db->insert_query("templates", array(
+		"tid"			=> NULL,
+		"title"			=> "Omnicoin Address Search Results No Entry",
+		"template"		=> '<tr class="trow1"><td colspan=3>{$message}</td></tr>',
+		"sid"			=> "-1"));
 				
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", 	'{$warning_level}{$omcaddress}{$omcbalance}');
 	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", 		'{$omcaddform}{$customfields}');
@@ -188,9 +200,11 @@ function omnicoin_deactivate() {
 
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address History'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address History Entry'");
+	$db->delete_query("templates", "title LIKE 'Omnicoin Address History No Entry'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results Entry'");
+	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results No Entry'");
 	
 	//Delete omnicoin address from profile template
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$omcaddress}{$omcbalance}') . "#", "");
@@ -385,9 +399,8 @@ function omnicoin_misc_start() {
 					eval("\$entries .=\"" . $template . "\";");
 				}
 			} else {
-				$address = "No address history";
-				$date = "";
-				$template = $templates->get("Omnicoin Address History Entry");
+				$message = "No address history";
+				$template = $templates->get("Omnicoin Address History No Entry");
 				eval("\$entries .=\"" . $template . "\";");
 			}
 		
@@ -417,11 +430,8 @@ function omnicoin_misc_start() {
 						eval("\$entries .=\"" . $template . "\";");
 					}
 				} else {
-					$username = "No results found";
-					$userid = "";
-					$address = "";
-					$date = "";
-					$template = $templates->get("Omnicoin Address Search Results Entry");
+					$message = "No results found";
+					$template = $templates->get("Omnicoin Address Search Results No Entry");
 					eval("\$entries .=\"" . $template . "\";");
 				}
 				
