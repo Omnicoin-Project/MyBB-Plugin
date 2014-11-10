@@ -224,8 +224,12 @@ function omnicoin_get_user_balance($uid) {
 			return omnicoin_formatNumber($data['balance'], 4);
 		} else {
 			$balance = omnicoin_getAddressBalance($data['address']);
-			$db->update_query("omcaddresses", array("balance" => $balance, "lastupdate" => date("Y-m-d H:i:s")), "id = '" . $data['id'] . "'");
-			return omnicoin_formatNumber($balance, 4);
+			if ($balance >= 0) {
+				$db->update_query("omcaddresses", array("balance" => $balance, "lastupdate" => date("Y-m-d H:i:s")), "id = '" . $data['id'] . "'");
+				return omnicoin_formatNumber($balance, 4);
+			} else {
+				return omnicoin_formatNumber($data['balance'], 4);
+			}
 		}
 	}
 	return -1;
@@ -554,9 +558,9 @@ function omnicoin_getAddressBalance($address) {
 		if (!$response['error']) {
 			return $response['response']['balance'];
 		} else {
-			return 0;
+			return -1;
 		}
 	} else {
-		return 0;
+		return -1;
 	}
 }
