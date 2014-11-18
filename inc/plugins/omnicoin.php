@@ -220,7 +220,7 @@ function omnicoin_get_user_balance($uid) {
 
 	if ($query->num_rows == 1) {
 		$data = $db->fetch_array($query);
-		if (time() - strtotime($data['lastupdate']) < 3600) { //Cache balances for 1 hour
+		if (TIME_NOW() - strtotime($data['lastupdate']) < 3600) { //Cache balances for 1 hour
 			return omnicoin_formatNumber($data['balance'], 4);
 		} else {
 			$balance = omnicoin_getAddressBalance($data['address']);
@@ -252,7 +252,7 @@ function omnicoin_member_profile_start() {
 		<strong>Omnicoin Address:</strong>
 	</td>
 	<td class='trow1'>
-		<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='misc.php?action=omchistory&amp;uid=" . $mybb->input['uid'] . "'>History</a>]
+		<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='misc.php?action=omchistory&amp;uid=" . intval($mybb->input['uid']) . "'>History</a>]
 	</td>
 </tr>";
 
