@@ -459,8 +459,7 @@ function omnicoin_verifyAddress($address, $message, $signature) {
 	
 	//Fix for PHP thinking that + is multiple strings there are multiple strings
 	$signature = preg_replace("/[+]/", "%2B", $signature);
-	
-	$response = json_decode(fetch_remote_file("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), TRUE);
+	$response = json_decode(fetch_remote_file("http://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), TRUE);
 	if ($response) {
 		if (!$response['error']) {
 			return $response['response']['isvalid'];
@@ -542,7 +541,7 @@ function omnicoin_getAddressBalance($address) {
 	//Returns the balance of the given address (double). 
 	//Assumes address is already validated.
 	
-	$response = json_decode(fetch_remote_file("https://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
+	$response = json_decode(fetch_remote_file("http://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
 	if ($response) {
 		if (!$response['error']) {
 			return $response['response']['balance'];
