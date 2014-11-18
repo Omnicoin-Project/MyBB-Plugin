@@ -6,7 +6,7 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
+This program is distributed in the htope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -220,7 +220,7 @@ function omnicoin_get_user_balance($uid) {
 
 	if ($query->num_rows == 1) {
 		$data = $db->fetch_array($query);
-		if (TIME_NOW() - strtotime($data['lastupdate']) < 3600) { //Cache balances for 1 hour
+		if (TIME_NOW - strtotime($data['lastupdate']) < 3600) { //Cache balances for 1 hour
 			return omnicoin_formatNumber($data['balance'], 4);
 		} else {
 			$balance = omnicoin_getAddressBalance($data['address']);
