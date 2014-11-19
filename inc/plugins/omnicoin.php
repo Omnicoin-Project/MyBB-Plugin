@@ -354,7 +354,6 @@ function omnicoin_user_update($userhandler) {
 	global $mybb, $db;
 	
 	if ($mybb->input['action'] == "do_profile") {
-		session_start();
 		$omcerrormessage = "";
 		if (isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature']) && !empty($mybb->input['omc_address'])) {
 			//Whitelist address so user can't inject into DB or API calls
