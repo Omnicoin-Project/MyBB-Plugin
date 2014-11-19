@@ -124,6 +124,89 @@ $db->insert_query("templates", array(
 		"template"		=> '<tr class="trow1"><td colspan=3>{$message}</td></tr>',
 		"sid"			=> "-1"));
 		
-eval("\$page = \"".$templates->get("ranks")."\";");
-output_page($page);
+
+function omnicoin_misc_start() {
+	//Handle misc.php funtionality
+	global $mybb, $db, $templates, $headerinclude, $header, $footer, $username, $entries, $search, $username;
+	
+	//Check to see if the user viewing the page is logged in, otherwise return.
+	if (!($mybb->user['uid'])) {
+		return;
+	}
+
+	if (isset($mybb->input['action'])) {
+		if ($mybb->input['action'] == "omchistory") {
+			if (isset($mybb->input['uid'])) {
+				$uid = $mybb->input['uid']; 
+			} else {
+				$uid = $mybb->user[uid];
+			}
+			$uid = intval(preg_replace("/[^0-9]/", "", $uid));
+			
+			// get the username corresponding to the UID passed to the miscpage
+			$grabuser = $db->simple_select("users", "username", "uid = '" . $uid . "'");
+			$user = $db->fetch_array($grabuser);
+			$username = $user['username'];
+	
+			//get all past addresses from table
+			$query = $db->simple_select("omcaddresses", "address, date", "uid = '" . $uid . "'", array("order_by" => "date", "order_dir" => "ASC"));
+			$entries = "";
+			
+			if ($query->num_rows > 0) {
+				// loop through each row in the database that matches our query and create a table row to display it
+				while($row = $db->fetch_array($query)){
+					$address = $row['address'];
+					$date = $row['date'];
+					$template = $templates->get("Omnicoin Address History Entry");
+					eval("\$entries .=\"" . $template . "\";");
+				}
+			} else {
+				$message = "No address history";
+				$template = $templates->get("Omnicoin Address History No Entry");
+				eval("\$entries .=\"" . $template . "\";");
+			}
+		
+			// grab our template
+			$template = $templates->get("Omnicoin Address History");
+			eval("\$page=\"" . $template . "\";");
+			output_page($page);
+		} else if ($mybb->input['action'] == "omcsearch") {
+			if (isset($mybb->input['search'])) {
+				$search = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['search']));
+				
+				//Get all addresses matching search term
+				$query = $db->simple_select("omcaddresses", "address, date, uid", "address LIKE CONCAT('%', '" . $search . "', '%')", array("order_by" => "date", "order_dir" => "ASC"));
+				$entries = "";
+				
+				if ($query->num_rows > 0) {
+					//Loop through each row in the database that matches our query and create a table row to display it
+					while($row = $db->fetch_array($query)){
+						$grabuser = $db->simple_select("users", "username", "uid = '" . $row['uid'] . "'");
+						$user = $db->fetch_array($grabuser);
+						
+						$username = $user['username'];
+						$userid = $row['uid'];
+						$address = $row['address'];
+						$date = $row['date'];
+						$template = $templates->get("Omnicoin Address Search Results Entry");
+						eval("\$entries .=\"" . $template . "\";");
+					}
+				} else {
+					$message = "No results found";
+					$template = $templates->get("Omnicoin Address Search Results No Entry");
+					eval("\$entries .=\"" . $template . "\";");
+				}
+				
+				$template = $templates->get("Omnicoin Address Search Results");
+				eval("\$page=\"" . $template . "\";");
+				output_page($page);
+			} else {			
+				$template = $templates->get("Omnicoin Address Search");
+				eval("\$page=\"" . $template . "\";");
+				output_page($page);
+			}
+		}
+	}
+}
+
 ?>
