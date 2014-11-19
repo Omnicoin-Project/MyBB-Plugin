@@ -302,10 +302,7 @@ function omnicoin_usercp_profile_start() {
 	
 	global $db, $omcaddform, $mybb;
 
-	$uid = $mybb->user[uid];
-	session_start();
-
-	$_SESSION['omc_signing_message'] = $mybb->settings['bbname'] . " Omnicoin Address Confirmation " . substr(md5(microtime()), rand(0, 26), 10) . " " . date("y-m-d H:i:s");
+	$signingmessage = $mybb->settings['bbname'] . " Omnicoin Address Confirmation - User: " . $mybb->user['username'] . " UID: " . $mybb->user['uid'];
 	
 	$query = $db->simple_select("omcaddresses", "address", "uid='" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
 	if ($query->num_rows == 1) {
@@ -325,10 +322,10 @@ function omnicoin_usercp_profile_start() {
 			<td colspan=2>Add an omnicoin address to your profile. Follow <a href='https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin'>this tutorial</a>.</td>
 		</tr>
 		<tr>
-			<td>Address:</td><td><input type='text' class='textbox' size='40' name='omc_address' value='" . ($address != "" ? $address : "") . "' /></td>
+			<td>Address:</td><td><input type='text' class='textbox' size='40' name='omc_address' value='" . $address . "' /></td>
 		</tr>
 		<tr>
-			<td>Signing message:</td><td>" . $_SESSION['omc_signing_message'] . "</td></td>
+			<td>Signing message:</td><td>" . $signingmessage . "</td></td>
 		</tr>
 		<tr>
 			<td>Signature:</td><td><input type='text' class='textbox' size='40' name='omc_signature' /></td>
@@ -365,7 +362,8 @@ function omnicoin_user_update($userhandler) {
 -			$signature = $db->escape_string(preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']));
 			
 			if (omnicoin_checkAddress($address)) {
-				if (omnicoin_verifyAddress($address, $_SESSION['omc_signing_message'], $signature)) {
+				$signingmessage = $mybb->settings['bbname'] . " Omnicoin Address Confirmation - User: " . $mybb->user['username'] . " UID: " . $mybb->user['uid'];
+				if (omnicoin_verifyAddress($address, $signingmessage, $signature)) {
 					$db->insert_query("omcaddresses", array("uid" => $mybb->user['uid'], "address" => $address, "date" => date("Y-m-d H:i:s")));
 					//Display success message
 					//$omcerrormessage = "Success!";
