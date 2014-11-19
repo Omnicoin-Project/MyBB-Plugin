@@ -20,7 +20,6 @@ if (!defined("IN_MYBB")) {
 }
 
 // Hooks
-$plugins->add_hook("misc_start", "omnicoin_misc_start");
 $plugins->add_hook("member_profile_start", "omnicoin_member_profile_start");
 $plugins->add_hook("usercp_profile_start", "omnicoin_usercp_profile_start");
 $plugins->add_hook("datahandler_user_update", "omnicoin_user_update");
@@ -139,7 +138,7 @@ function omnicoin_activate() {
 		{$header}
 		<h2>Search for accounts with a matching Omnicoin address</h2>
 		<br />
-		<form action="misc.php?action=omcsearch" method="post">
+		<form action="coins.php?action=search" method="post">
 			<input class="textbox" type="text" name="search">
 			<input class="button" type="submit" value="Search">
 		</form>
@@ -188,7 +187,7 @@ function omnicoin_activate() {
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", 	'{$warning_level}{$omcaddress}{$omcbalance}');
 	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", 		'{$omcaddform}{$customfields}');
 	find_replace_templatesets("usercp", 		"#" . preg_quote('{$referral_info}') . "#",	 	'{$omcaddress}{$referral_info}');
-	find_replace_templatesets("header", 		"#" . preg_quote('{$menu_memberlist}') . "#",	'{$menu_memberlist}<li><a href="{$mybb->settings[\'bburl\']}/misc.php?action=omcsearch" class="search">OMC Search</a></li>');
+	find_replace_templatesets("header", 		"#" . preg_quote('{$menu_memberlist}') . "#",	'{$menu_memberlist}<li><a href="{$mybb->settings[\'bburl\']}/coins.php?action=search" class="search">OMC Search</a></li>');
 }
 
 function omnicoin_deactivate() {
@@ -210,7 +209,7 @@ function omnicoin_deactivate() {
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$omcaddress}{$omcbalance}') . "#", "");
 	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$omcaddform}') . "#", "");
 	find_replace_templatesets("usercp", 		"#" . preg_quote('{$omcaddress}') . "#", "");
-	find_replace_templatesets("header", 		"#" . preg_quote('<li><a href="{$mybb->settings[\'bburl\']}/misc.php?action=omcsearch" class="search">OMC Search</a></li>') . "#", "");
+	find_replace_templatesets("header", 		"#" . preg_quote('<li><a href="{$mybb->settings[\'bburl\']}/coins.php?action=search" class="search">OMC Search</a></li>') . "#", "");
 }
 
 function omnicoin_get_user_balance($uid) {
@@ -252,7 +251,7 @@ function omnicoin_member_profile_start() {
 		<strong>Omnicoin Address:</strong>
 	</td>
 	<td class='trow1'>
-		<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='misc.php?action=omchistory&amp;uid=" . intval($mybb->input['uid']) . "'>History</a>]
+		<a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='coins.php?action=history&amp;uid=" . intval($mybb->input['uid']) . "'>History</a>]
 	</td>
 </tr>";
 
@@ -327,7 +326,7 @@ function omnicoin_usercp_start() {
 		$returndata = $db->fetch_array($query);
 		$address = $returndata['address'];	
 
-		$omcaddress = "<strong>Omnicoin Address: </strong><a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='misc.php?action=omchistory&amp;uid=" . $mybb->user['uid'] . "'>History</a>]<br />";
+		$omcaddress = "<strong>Omnicoin Address: </strong><a target='_blank' href='https://omnicha.in?address=" . $address . "'>" . $address . "</a>&nbsp;[<a href='coins.php?action=history&amp;uid=" . $mybb->user['uid'] . "'>History</a>]<br />";
 	} else {
 		$omcaddress = "";
 	}
@@ -365,90 +364,6 @@ function omnicoin_user_update($userhandler) {
 			echo "<script language='javascript'>";
 			echo "alert('" . $omcerrormessage . "')";
 			echo "</script>";
-		}
-	}
-}
-
-function omnicoin_misc_start() {
-	//Handle misc.php funtionality
-	global $mybb, $db, $templates, $headerinclude, $header, $footer, $username, $entries, $search, $username;
-	
-	//Check to see if the user viewing the page is logged in, otherwise return.
-	if (!($mybb->user['uid'])) {
-		return;
-	}
-
-	if (isset($mybb->input['action'])) {
-		if ($mybb->input['action'] == "omchistory") {
-			if (isset($mybb->input['uid'])) {
-				$uid = $mybb->input['uid']; 
-			} else {
-				$uid = $mybb->user[uid];
-			}
-			$uid = intval(preg_replace("/[^0-9]/", "", $uid));
-			
-			// get the username corresponding to the UID passed to the miscpage
-			$grabuser = $db->simple_select("users", "username", "uid = '" . $uid . "'");
-			$user = $db->fetch_array($grabuser);
-			$username = $user['username'];
-	
-			//get all past addresses from table
-			$query = $db->simple_select("omcaddresses", "address, date", "uid = '" . $uid . "'", array("order_by" => "date", "order_dir" => "ASC"));
-			$entries = "";
-			
-			if ($query->num_rows > 0) {
-				// loop through each row in the database that matches our query and create a table row to display it
-				while($row = $db->fetch_array($query)){
-					$address = $row['address'];
-					$date = $row['date'];
-					$template = $templates->get("Omnicoin Address History Entry");
-					eval("\$entries .=\"" . $template . "\";");
-				}
-			} else {
-				$message = "No address history";
-				$template = $templates->get("Omnicoin Address History No Entry");
-				eval("\$entries .=\"" . $template . "\";");
-			}
-		
-			// grab our template
-			$template = $templates->get("Omnicoin Address History");
-			eval("\$page=\"" . $template . "\";");
-			output_page($page);
-		} else if ($mybb->input['action'] == "omcsearch") {
-			if (isset($mybb->input['search'])) {
-				$search = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['search']));
-				
-				//Get all addresses matching search term
-				$query = $db->simple_select("omcaddresses", "address, date, uid", "address LIKE CONCAT('%', '" . $search . "', '%')", array("order_by" => "date", "order_dir" => "ASC"));
-				$entries = "";
-				
-				if ($query->num_rows > 0) {
-					//Loop through each row in the database that matches our query and create a table row to display it
-					while($row = $db->fetch_array($query)){
-						$grabuser = $db->simple_select("users", "username", "uid = '" . $row['uid'] . "'");
-						$user = $db->fetch_array($grabuser);
-						
-						$username = $user['username'];
-						$userid = $row['uid'];
-						$address = $row['address'];
-						$date = $row['date'];
-						$template = $templates->get("Omnicoin Address Search Results Entry");
-						eval("\$entries .=\"" . $template . "\";");
-					}
-				} else {
-					$message = "No results found";
-					$template = $templates->get("Omnicoin Address Search Results No Entry");
-					eval("\$entries .=\"" . $template . "\";");
-				}
-				
-				$template = $templates->get("Omnicoin Address Search Results");
-				eval("\$page=\"" . $template . "\";");
-				output_page($page);
-			} else {			
-				$template = $templates->get("Omnicoin Address Search");
-				eval("\$page=\"" . $template . "\";");
-				output_page($page);
-			}
 		}
 	}
 }
