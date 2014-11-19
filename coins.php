@@ -108,5 +108,10 @@ if (isset($mybb->input['action'])) {
 		output_page($page);
 	}
 }
+else {
+	$template = $templates->get("Omnicoin Default Page");
+	eval("\$page=\"" . $template . "\";");
+	output_page($page);	
+}
 
 ?>
