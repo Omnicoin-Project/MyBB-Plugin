@@ -139,7 +139,7 @@ function omnicoin_activate() {
 		<h2>Search for accounts with a matching Omnicoin address</h2>
 		<br />
 		<form action="coins.php?action=search" method="post">
-			<input class="textbox" type="text" name="search">
+			<input class="textbox" type="text" name="query">
 			<input class="button" type="submit" value="Search">
 		</form>
 		{$footer}
