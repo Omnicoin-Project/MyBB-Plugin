@@ -135,7 +135,7 @@ function omnicoin_misc_start() {
 	}
 
 	if (isset($mybb->input['action'])) {
-		if ($mybb->input['action'] == "omchistory") {
+		if ($mybb->input['action'] == "history") {
 			if (isset($mybb->input['uid'])) {
 				$uid = $mybb->input['uid']; 
 			} else {
@@ -170,7 +170,7 @@ function omnicoin_misc_start() {
 			$template = $templates->get("Omnicoin Address History");
 			eval("\$page=\"" . $template . "\";");
 			output_page($page);
-		} else if ($mybb->input['action'] == "omcsearch") {
+		} else if ($mybb->input['action'] == "search") {
 			if (isset($mybb->input['search'])) {
 				$search = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['search']));
 				
