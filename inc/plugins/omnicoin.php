@@ -183,6 +183,24 @@ function omnicoin_activate() {
 		"title"			=> "Omnicoin Address Search Results No Entry",
 		"template"		=> '<tr class="trow1"><td colspan=3>{$message}</td></tr>',
 		"sid"			=> "-1"));
+	
+	$db->insert_query("templates", array(
+		"tid"			=> NULL,
+		"title"			=> "Omnicoin Default Page",
+		"template"		=> '<html>
+	<head>
+		<title>Omnicoin</title>
+		{$headerinclude}
+	</head>
+	<body>
+		{$header}
+		<h2>Omnicoin</h2>
+		<br />
+		<p>Not exactly sure what I should put here yet. Watch this space :)</p>
+		{$footer}
+	</body>
+</html>',
+		"sid"			=> "-1"));
 				
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", 	'{$warning_level}{$omcaddress}{$omcbalance}');
 	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", 		'{$omcaddform}{$customfields}');
@@ -204,6 +222,7 @@ function omnicoin_deactivate() {
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results Entry'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results No Entry'");
+	$db->delete_query("templates", "title LIKE 'Omnicoin Default Page'");
 	
 	//Delete omnicoin address from profile template
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$omcaddress}{$omcbalance}') . "#", "");
