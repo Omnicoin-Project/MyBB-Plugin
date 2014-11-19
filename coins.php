@@ -22,9 +22,6 @@ define('THIS_SCRIPT', 'coins.php');
 
 require_once "./global.php";
 
-//global $mybb, $db, $templates, $headerinclude, $header, $footer, $username, $entries, $search, $username;
-
-
 if($mybb->user['uid'] == 0)
 {
 	error_no_permission();
