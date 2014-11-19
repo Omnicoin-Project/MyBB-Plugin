@@ -56,7 +56,7 @@ function omnicoin_install() {
 			`balance` decimal	NOT NULL DEFAULT 0,
 			`lastupdate` DATETIME NOT NULL,
 			PRIMARY KEY (`id`)
-			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;");
 	}
 }
 
@@ -453,25 +453,13 @@ function omnicoin_misc_start() {
 	}
 }
 
-function omnicoin_grabData($url){
-	curl_setopt($ch = curl_init(), CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	$output = curl_exec($ch);
-	curl_close($ch);
-
-	return $output;
-}
-
 function omnicoin_verifyAddress($address, $message, $signature) {
 	//Returns whether or not the signature is valid for the message for this address (boolean).
 	//Assumes address is already validated.
 	
 	//Fix for PHP thinking that + is multiple strings there are multiple strings
 	$signature = preg_replace("/[+]/", "%2B", $signature);
-	
-	$response = json_decode(omnicoin_grabData("https://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), TRUE);
+	$response = json_decode(fetch_remote_file("http://omnicha.in/api?method=verifymessage&address=" . urlencode($address) . "&message=" . urlencode($message) . "&signature=" . urlencode($signature)), TRUE);
 	if ($response) {
 		if (!$response['error']) {
 			return $response['response']['isvalid'];
@@ -553,7 +541,7 @@ function omnicoin_getAddressBalance($address) {
 	//Returns the balance of the given address (double). 
 	//Assumes address is already validated.
 	
-	$response = json_decode(omnicoin_grabData("https://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
+	$response = json_decode(fetch_remote_file("http://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
 	if ($response) {
 		if (!$response['error']) {
 			return $response['response']['balance'];
