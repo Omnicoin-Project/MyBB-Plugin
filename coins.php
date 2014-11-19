@@ -18,12 +18,16 @@
  */
 
 define("IN_MYBB", 1);
-define('THIS_SCRIPT', 'coins.php');
+define("THIS_SCRIPT", "coins.php");
 
 require_once "./global.php";
 
-if($mybb->user['uid'] == 0)
-{
+//check if plugin is enabled
+if (!array_key_exists("omnicoin", $cache->read("plugins")['active'])) {
+	die();
+}
+
+if (!$mybb->user['uid']) {
 	error_no_permission();
 }
 
@@ -36,7 +40,7 @@ if (isset($mybb->input['action'])) {
 		}
 		$uid = intval(preg_replace("/[^0-9]/", "", $uid));
 			
-		// get the username corresponding to the UID passed to the miscpage
+		// get the username corresponding to the UID passed to the page
 		$grabuser = $db->simple_select("users", "username", "uid = '" . $uid . "'");
 		$user = $db->fetch_array($grabuser);
 		$username = $user['username'];
@@ -63,9 +67,7 @@ if (isset($mybb->input['action'])) {
 		$template = $templates->get("Omnicoin Address History");
 		eval("\$page=\"" . $template . "\";");
 		output_page($page);
-	}
-	
-	else if ($mybb->input['action'] == "search") {
+	} else if ($mybb->input['action'] == "search") {
 		if (isset($mybb->input['query'])) {
 			$search = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['query']));
 				
@@ -100,18 +102,14 @@ if (isset($mybb->input['action'])) {
 			eval("\$page=\"" . $template . "\";");
 			output_page($page);
 		}
-	}
-	
-	else {
+	} else {
 		$template = $templates->get("Omnicoin Default Page");
 		eval("\$page=\"" . $template . "\";");
 		output_page($page);
 	}
-}
-else {
+} else {
 	$template = $templates->get("Omnicoin Default Page");
 	eval("\$page=\"" . $template . "\";");
 	output_page($page);	
 }
-
 ?>
