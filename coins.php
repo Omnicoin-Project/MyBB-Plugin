@@ -20,8 +20,6 @@
 define("IN_MYBB", 1);
 
 require_once "./global.php";
-$lang->load("ranks");
-add_breadcrumb($lang->listranks);
 
 if($mybb->user['uid'] == 0)
 {
