@@ -102,6 +102,37 @@ if (isset($mybb->input['action'])) {
 			eval("\$page=\"" . $template . "\";");
 			output_page($page);
 		}
+	} else if ($mybb->input['action'] == "addaddress") {
+		$signingmessage = $mybb->settings['bbname'] . " Omnicoin Address Confirmation - User: " . $mybb->user['username'] . " UID: " . $mybb->user['uid'];
+		$alert = "";
+		
+		if (isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature'])) {
+			$good_alert_template = $templates->get("Omnicoin Alert Good");
+			$bad_alert_template = $templates->get("Omnicoin Alert Bad");
+			
+			//Whitelist address so user can't inject into DB or API calls
+			$address = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['omc_address']));
+			$signature = $db->escape_string(preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']));
+					
+			if (omnicoin_checkAddress($address)) {
+				if (omnicoin_verifyAddress($address, $signingmessage, $signature)) {
+					$db->insert_query("omcaddresses", array("uid" => $mybb->user['uid'], "address" => $address, "date" => date("Y-m-d H:i:s")));
+					
+					$alert_text = "Omnicoin address added successfully!";
+					eval("\$alert=\"" . $good_alert_template . "\";");
+				} else {
+					$alert_text = "Error: Invalid Omnicoin address signature";
+					eval("\$alert=\"" . $bad_alert_template . "\";");
+				}
+			} else {
+				$alert_text = "Error: Invalid Omnicoin address";
+				eval("\$alert=\"" . $bad_alert_template . "\";");
+			}
+		}
+		
+		$template = $templates->get("Omnicoin Add Address Page");
+		eval("\$page=\"" . $template . "\";");
+		output_page($page);
 	} else {
 		$template = $templates->get("Omnicoin Default Page");
 		eval("\$page=\"" . $template . "\";");

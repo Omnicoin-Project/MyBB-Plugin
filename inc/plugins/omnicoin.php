@@ -21,8 +21,6 @@ if (!defined("IN_MYBB")) {
 
 // Hooks
 $plugins->add_hook("member_profile_start", "omnicoin_member_profile_start");
-$plugins->add_hook("usercp_profile_start", "omnicoin_usercp_profile_start");
-$plugins->add_hook("datahandler_user_update", "omnicoin_user_update");
 $plugins->add_hook("usercp_start", "omnicoin_usercp_start");
 $plugins->add_hook("postbit", "omnicoin_postbit");
 
@@ -91,9 +89,9 @@ function omnicoin_activate() {
 	require_once MYBB_ROOT . '/inc/adminfunctions_templates.php';
 
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Address History",
-		"template"		=> '<html>
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Address History",
+		"template"	=> '<html>
 	<head>
 		<title>Omnicoin Address History</title>
 		{$headerinclude}
@@ -112,24 +110,24 @@ function omnicoin_activate() {
 		{$footer}
 	</body>
 </html>',
-		"sid"			=> "-1"));
+		"sid"		=> "-1"));
 		
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Address History Entry",
-		"template"		=> '<tr class="trow1"><td><a target="_blank" href="https://omnicha.in?address={$address}">{$address}</a></td><td>{$date}</td></tr>',
-		"sid"			=> "-1"));
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Address History Entry",
+		"template"	=> '<tr class="trow1"><td><a target="_blank" href="https://omnicha.in?address={$address}">{$address}</a></td><td>{$date}</td></tr>',
+		"sid"		=> "-1"));
 		
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Address History No Entry",
-		"template"		=> '<tr class="trow1"><td colspan=2>{$message}</td></tr>',
-		"sid"			=> "-1"));
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Address History No Entry",
+		"template"	=> '<tr class="trow1"><td colspan=2>{$message}</td></tr>',
+		"sid"		=> "-1"));
 				
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Address Search",
-		"template"		=> '<html>
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Address Search",
+		"template"	=> '<html>
 	<head>
 		<title>Omnicoin Address Search</title>
 		{$headerinclude}
@@ -145,12 +143,12 @@ function omnicoin_activate() {
 		{$footer}
 	</body>
 </html>',
-		"sid"			=> "-1"));
+		"sid"		=> "-1"));
 		
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Address Search Results",
-		"template"		=> '<html>
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Address Search Results",
+		"template"	=> '<html>
 	<head>
 		<title>Omnicoin Address Search</title>
 		{$headerinclude}
@@ -170,24 +168,24 @@ function omnicoin_activate() {
 		{$footer}
 	</body>
 </html>',
-		"sid"			=> "-1"));
+		"sid"		=> "-1"));
 		
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Address Search Results Entry",
-		"template"		=> '<tr class="trow1"><td><a href="member.php?action=profile&uid={$userid}">{$username}</td><td><a target="_blank" href="https://omnicha.in?address={$address}">{$address}</a></td><td>{$date}</td></tr>',
-		"sid"			=> "-1"));
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Address Search Results Entry",
+		"template"	=> '<tr class="trow1"><td><a href="member.php?action=profile&uid={$userid}">{$username}</td><td><a target="_blank" href="https://omnicha.in?address={$address}">{$address}</a></td><td>{$date}</td></tr>',
+		"sid"		=> "-1"));
 		
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Address Search Results No Entry",
-		"template"		=> '<tr class="trow1"><td colspan=3>{$message}</td></tr>',
-		"sid"			=> "-1"));
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Address Search Results No Entry",
+		"template"	=> '<tr class="trow1"><td colspan=3>{$message}</td></tr>',
+		"sid"		=> "-1"));
 	
 	$db->insert_query("templates", array(
-		"tid"			=> NULL,
-		"title"			=> "Omnicoin Default Page",
-		"template"		=> '<html>
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Default Page",
+		"template"	=> '<html>
 	<head>
 		<title>Omnicoin</title>
 		{$headerinclude}
@@ -196,16 +194,67 @@ function omnicoin_activate() {
 		{$header}
 		<h2>Omnicoin</h2>
 		<br />
-		<p>Not exactly sure what I should put here yet. Watch this space :)</p>
+		<a href="coins.php?action=search">Search users by Omnicoin address</a><br />
+		<a href="coins.php?action=history">View your Omnicoin address history</a><br />
+		<a href="coins.php?action=addaddress">Add a new Omnicoin address to your profile</a>
 		{$footer}
 	</body>
 </html>',
-		"sid"			=> "-1"));
+		"sid"		=> "-1"));
+		
+	$db->insert_query("templates", array(
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Add Address Page",
+		"template"	=> '<html>
+	<head>
+		<title>Add Omnicoin Address</title>
+		{$headerinclude}
+	</head>
+	<body>
+		{$header}
+		<h2>Add an Omnicoin address</h2>
+		<form method="post" action="coins.php?action=addaddress">
+			<table cellspacing="0" cellpadding="5">
+				<tr>
+					<td colspan=2>{$alert}</td>
+				</tr>
+				<tr>
+					<td colspan=2>Add an omnicoin address to your profile. Follow <a href="https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin">this tutorial</a>.</td>
+				</tr>
+				<tr>
+					<td>Address:</td><td><input type="text" class="textbox" size="40" name="omc_address" /></td>
+				</tr>
+				<tr>
+					<td>Signing message:</td><td><textarea style="width: 100%;" size="40">{$signingmessage}</textarea></td>
+				</tr>
+				<tr>
+					<td>Signature:</td><td><input type="text" class="textbox" size="40" name="omc_signature" /></td>
+				</tr>
+				<tr>
+					<td><input class="button" type="submit" value="Add address" /></td>
+				</tr>
+			</table>
+		</form>
+		{$footer}
+	</body>
+</html>',
+		"sid"		=> "-1"));
+	
+	$db->insert_query("templates", array(
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Alert Good",
+		"template"	=> '<div class="red_alert" style="background-color: #e8fcdc; border-color: #080; color: #080;">{$alert_text}</div>',
+		"sid"		=> "-1"));
+		
+	$db->insert_query("templates", array(
+		"tid"		=> NULL,
+		"title"		=> "Omnicoin Alert Bad",
+		"template"	=> '<div class="red_alert">{$alert_text}</div>',
+		"sid"		=> "-1"));
 				
-	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", 	'{$warning_level}{$omcaddress}{$omcbalance}');
-	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$customfields}') . "#", 		'{$omcaddform}{$customfields}');
-	find_replace_templatesets("usercp", 		"#" . preg_quote('{$referral_info}') . "#",	 	'{$omcaddress}{$referral_info}');
-	find_replace_templatesets("header", 		"#" . preg_quote('{$menu_memberlist}') . "#",	'{$menu_memberlist}<li><a href="{$mybb->settings[\'bburl\']}/coins.php?action=search" class="search">OMC Search</a></li>');
+	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') 	. "#", 	'{$warning_level}{$omcaddress}{$omcbalance}');
+	find_replace_templatesets("usercp", 		"#" . preg_quote('{$referral_info}') 	. "#",	'{$omcaddress}{$referral_info}');
+	find_replace_templatesets("header", 		"#" . preg_quote('{$menu_memberlist}') 	. "#",	'{$menu_memberlist}<li><a href="{$mybb->settings[\'bburl\']}/coins.php" class="search">Omnicoin</a></li>');
 }
 
 function omnicoin_deactivate() {
@@ -223,12 +272,14 @@ function omnicoin_deactivate() {
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results Entry'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results No Entry'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Default Page'");
+	$db->delete_query("templates", "title LIKE 'Omnicoin Add Address Page'");
+	$db->delete_query("templates", "title LIKE 'Omnicoin Alert Good'");
+	$db->delete_query("templates", "title LIKE 'Omnicoin Alert Bad'");
 	
 	//Delete omnicoin address from profile template
-	find_replace_templatesets("member_profile", "#" . preg_quote('{$omcaddress}{$omcbalance}') . "#", "");
-	find_replace_templatesets("usercp_profile", "#" . preg_quote('{$omcaddform}') . "#", "");
-	find_replace_templatesets("usercp", 		"#" . preg_quote('{$omcaddress}') . "#", "");
-	find_replace_templatesets("header", 		"#" . preg_quote('<li><a href="{$mybb->settings[\'bburl\']}/coins.php?action=search" class="search">OMC Search</a></li>') . "#", "");
+	find_replace_templatesets("member_profile", "#" . preg_quote('{$omcaddress}{$omcbalance}') 																. "#", "");
+	find_replace_templatesets("usercp", 		"#" . preg_quote('{$omcaddress}') 																			. "#", "");
+	find_replace_templatesets("header", 		"#" . preg_quote('<li><a href="{$mybb->settings[\'bburl\']}/coins.php" class="search">Omnicoin</a></li>') 	. "#", "");
 }
 
 function omnicoin_get_user_balance($uid) {
@@ -297,43 +348,6 @@ function omnicoin_postbit(&$post) {
 	}
 }
 
-function omnicoin_usercp_profile_start() {
-	//called when a user opens options page of usercp.
-	
-	global $db, $omcaddform, $mybb;
-
-	$signingmessage = $mybb->settings['bbname'] . " Omnicoin Address Confirmation - User: " . $mybb->user['username'] . " UID: " . $mybb->user['uid'];
-	
-	$query = $db->simple_select("omcaddresses", "address", "uid='" . $mybb->user['uid'] . "'", array("order_by" => "date", "order_dir" => "DESC", "limit" => 1));
-	if ($query->num_rows == 1) {
-		$returndata = $db->fetch_array($query);
-		$address = $returndata['address'];	
-	} else {
-		$address = "";
-	}
-	
-	$omcaddform = "<br />
-<fieldset class='trow2'>
-	<legend>
-		<strong>Omnicoin address</strong>
-	</legend>
-	<table cellspacing='0' cellpadding='2'>
-		<tr>
-			<td colspan=2>Add an omnicoin address to your profile. Follow <a href='https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin'>this tutorial</a>.</td>
-		</tr>
-		<tr>
-			<td>Address:</td><td><input type='text' class='textbox' size='40' name='omc_address' value='" . $address . "' /></td>
-		</tr>
-		<tr>
-			<td>Signing message:</td><td>" . $signingmessage . "</td></td>
-		</tr>
-		<tr>
-			<td>Signature:</td><td><input type='text' class='textbox' size='40' name='omc_signature' /></td>
-		</tr>
-	</table>
-</fieldset>";
-}
-
 function omnicoin_usercp_start() {
 	global $db, $omcaddress, $mybb;
 	
@@ -348,39 +362,24 @@ function omnicoin_usercp_start() {
 	}
 }
 
-function omnicoin_user_update($userhandler) {
-	//this is where we will put the code to handle verification and storing of the addresses
+function omnicoin_formatNumber($val, $precision = 10) {
+	$to_return = rtrim(rtrim(number_format(round($val, $precision), $precision), "0"), ".");
+	return $to_return == "" ? "0" : $to_return;
+}
 
-	global $mybb, $db;
+function omnicoin_getAddressBalance($address) {
+	//Returns the balance of the given address (double). 
+	//Assumes address is already validated.
 	
-	if ($mybb->input['action'] == "do_profile") {
-		$omcerrormessage = "";
-		if (isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature']) && !empty($mybb->input['omc_address'])) {
-			//Whitelist address so user can't inject into DB or API calls
-			$address = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['omc_address']));
--			$signature = $db->escape_string(preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']));
-			
-			if (omnicoin_checkAddress($address)) {
-				$signingmessage = $mybb->settings['bbname'] . " Omnicoin Address Confirmation - User: " . $mybb->user['username'] . " UID: " . $mybb->user['uid'];
-				if (omnicoin_verifyAddress($address, $signingmessage, $signature)) {
-					$db->insert_query("omcaddresses", array("uid" => $mybb->user['uid'], "address" => $address, "date" => date("Y-m-d H:i:s")));
-					//Display success message
-					//$omcerrormessage = "Success!";
-				} else {
-					//Display signature invalid message
-					$omcerrormessage = "Error: Invalid Omnicoin address signature";
-				}
-			} else {
-				//Display address invalid message
-				$omcerrormessage = "Error: Invalid Omnicoin address";
-			}
+	$response = json_decode(fetch_remote_file("http://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
+	if ($response) {
+		if (!$response['error']) {
+			return $response['response']['balance'];
+		} else {
+			return -1;
 		}
-		
-		if ($omcerrormessage != "") {
-			echo "<script language='javascript'>";
-			echo "alert('" . $omcerrormessage . "')";
-			echo "</script>";
-		}
+	} else {
+		return -1;
 	}
 }
 
@@ -404,7 +403,7 @@ function omnicoin_verifyAddress($address, $message, $signature) {
 
 function omnicoin_checkAddress($addr) {
 	//Returns whether or not the address is valid (boolean).
-
+	
 	$addr = omnicoin_decodeBase58($addr);
 	if (strlen($addr) != 50) {
 		return false;
@@ -461,25 +460,4 @@ function omnicoin_encodeHex($dec) {
 		$return = $return . $hexchars[$rem];
 	}
 	return strrev($return);
-}
-
-function omnicoin_formatNumber($val, $precision = 10) {
-	$to_return = rtrim(rtrim(number_format(round($val, $precision), $precision), "0"), ".");
-	return $to_return == "" ? "0" : $to_return;
-}
-
-function omnicoin_getAddressBalance($address) {
-	//Returns the balance of the given address (double). 
-	//Assumes address is already validated.
-	
-	$response = json_decode(fetch_remote_file("http://omnicha.in/api/?method=getbalance&address=" . urlencode($address)), TRUE);
-	if ($response) {
-		if (!$response['error']) {
-			return $response['response']['balance'];
-		} else {
-			return -1;
-		}
-	} else {
-		return -1;
-	}
 }
