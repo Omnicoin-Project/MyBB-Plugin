@@ -21,7 +21,6 @@ if (!defined("IN_MYBB")) {
 
 // Hooks
 $plugins->add_hook("member_profile_start", "omnicoin_member_profile_start");
-$plugins->add_hook("datahandler_user_update", "omnicoin_user_update");
 $plugins->add_hook("usercp_start", "omnicoin_usercp_start");
 $plugins->add_hook("postbit", "omnicoin_postbit");
 
