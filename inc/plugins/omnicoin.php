@@ -220,7 +220,7 @@ function omnicoin_activate() {
 			<td colspan=2>Add an omnicoin address to your profile. Follow <a href="https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin">this tutorial</a>.</td>
 		</tr>
 		<tr>
-			<td>Address:</td><td><input type="text" class="textbox" size="40" name="omc_address" value="' . $address . '" /></td>
+			<td>Address:</td><td><input type="text" class="textbox" size="40" name="omc_address" /></td>
 		</tr>
 		<tr>
 			<td>Signing message:</td><td>' . $signingmessage . '</td></td>
@@ -229,7 +229,7 @@ function omnicoin_activate() {
 			<td>Signature:</td><td><input type="text" class="textbox" size="40" name="omc_signature" /></td>
 		</tr>
 		<tr>
-			<button type="submit" name="submit" />Add Address</td>
+			<input type="submit" />Add Address</td>
 		</tr>
 	</table></form>
 	{$footer}
@@ -256,6 +256,7 @@ function omnicoin_deactivate() {
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results Entry'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Address Search Results No Entry'");
 	$db->delete_query("templates", "title LIKE 'Omnicoin Default Page'");
+        $db->delete_query("templates", "title LIKE 'Omnicoin Add Address Page'");
 	
 	//Delete omnicoin address from profile template
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$omcaddress}{$omcbalance}') . "#", "");
