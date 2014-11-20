@@ -201,7 +201,7 @@ function omnicoin_activate() {
 </html>',
 		"sid"			=> "-1"));
 		
-		$db->insert_query("templates", array(
+	$db->insert_query("templates", array(
 		"tid"			=> NULL,
 		"title"			=> "Omnicoin Add Address Page",
 		"template"		=> '<html>
