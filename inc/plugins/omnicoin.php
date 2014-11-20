@@ -204,7 +204,7 @@ function omnicoin_activate() {
 		$db->insert_query("templates", array(
 		"tid"			=> NULL,
 		"title"			=> "Omnicoin Add Address Page",
-		"template"		=> "<html>
+		"template"		=> '<html>
 	<head>
 		<title>Add Omnicoin Address</title>
 		{$headerinclude}
@@ -212,26 +212,26 @@ function omnicoin_activate() {
 	<body>
 		{$header}
 		<h2>Add an Omnicoin address</h2>
-	<table cellspacing='0' cellpadding='2'>
+	<table cellspacing="0" cellpadding="2">
 		<tr>
-			<td colspan=2>Add an omnicoin address to your profile. Follow <a href='https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin'>this tutorial</a>.</td>
+			<td colspan=2>Add an omnicoin address to your profile. Follow <a href="https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin">this tutorial</a>.</td>
 		</tr>
 		<tr>
-			<td>Address:</td><td><input type='text' class='textbox' size='40' name='omc_address' value='" . $address . "' /></td>
+			<td>Address:</td><td><input type="text" class="textbox" size="40" name="omc_address" value="' . $address . '" /></td>
 		</tr>
 		<tr>
-			<td>Signing message:</td><td>" . $signingmessage . "</td></td>
+			<td>Signing message:</td><td>' . $signingmessage . '</td></td>
 		</tr>
 		<tr>
-			<td>Signature:</td><td><input type='text' class='textbox' size='40' name='omc_signature' /></td>
+			<td>Signature:</td><td><input type="text" class="textbox" size="40" name="omc_signature" /></td>
 		</tr>
 		<tr>
-			<input type='button' name='submmit' />Add Address</td>
+			<input type="button" name="submmit" />Add Address</td>
 		</tr>
 	</table>
 	{$footer}
 	</body>
-</html>";
+</html>';
 				
 	find_replace_templatesets("member_profile", "#" . preg_quote('{$warning_level}') . "#", 	'{$warning_level}{$omcaddress}{$omcbalance}');
 	find_replace_templatesets("usercp", 		"#" . preg_quote('{$referral_info}') . "#",	 	'{$omcaddress}{$referral_info}');
