@@ -23,8 +23,8 @@ define("THIS_SCRIPT", "coins.php");
 require_once "./global.php";
 
 //check if Omnicoin plugin is enabled
-$plugins = $cache->read("plugins");
-if (!array_key_exists("omnicoin", $plugins['active'])) {
+$enabled_plugins = $cache->read("plugins");
+if (!array_key_exists("omnicoin", $enabled_plugins['active'])) {
 	die();
 }
 
