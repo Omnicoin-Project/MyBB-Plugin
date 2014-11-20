@@ -195,7 +195,9 @@ function omnicoin_activate() {
 		{$header}
 		<h2>Omnicoin</h2>
 		<br />
-		<p>Not exactly sure what I should put here yet. Watch this space :)</p>
+		<a href="coins.php?action=search">Search Addresses</a><br />
+<a href="coins.php?action=history">View all addresses</a><br />
+<a href="coins.php?action=newaddress">Add a new address</a>
 		{$footer}
 	</body>
 </html>',
@@ -212,6 +214,8 @@ function omnicoin_activate() {
 	<body>
 		{$header}
 		<h2>Add an Omnicoin address</h2>
+<form method="post" action="coins.php">
+
 	<table cellspacing="0" cellpadding="2">
 		<tr>
 			<td colspan=2>Add an omnicoin address to your profile. Follow <a href="https://github.com/Omnicoin-Project/Omnicoin/wiki/Signing-a-message-using-Omnicoin">this tutorial</a>.</td>
@@ -226,9 +230,9 @@ function omnicoin_activate() {
 			<td>Signature:</td><td><input type="text" class="textbox" size="40" name="omc_signature" /></td>
 		</tr>
 		<tr>
-			<input type="button" name="submit" />Add Address</td>
+			<button type="submit" name="submit" />Add Address</td>
 		</tr>
-	</table>
+	</table></form>
 	{$footer}
 	</body>
 </html>';
