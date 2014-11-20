@@ -32,7 +32,7 @@ if (!$mybb->user['uid']) {
 }
 
 if (isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature'])) {
-omnicoin_add_address($mybb->input['omc_address'], $mybb->input['omc_signature']);
+       omnicoin_add_address($mybb->input['omc_address'], $mybb->input['omc_signature']);
 }
 
 if (isset($mybb->input['action'])) {
