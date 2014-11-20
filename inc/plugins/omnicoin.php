@@ -365,39 +365,34 @@ function omnicoin_getAddressBalance($address) {
 	}
 }
 
-function omnicoin_add_address($userhandler) {
-	//this is where we will put the code to handle verification and storing of the addresses
-
-	global $mybb, $db;
+function omnicoin_add_address($address, $signature) {
 	
-	if ($mybb->input['action'] == "do_profile") {
-		$omcerrormessage = "";
-		if (isset($mybb->input['omc_address']) && isset($mybb->input['omc_signature']) && !empty($mybb->input['omc_address'])) {
-			//Whitelist address so user can't inject into DB or API calls
-			$address = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $mybb->input['omc_address']));
--			$signature = $db->escape_string(preg_replace("/[^A-Za-z0-9=+-\/]/", "", $mybb->input['omc_signature']));
+	global $mybb, $db;
+
+	$omcerrormessage = "";
+	//Whitelist address so user can't inject into DB or API calls
+	$address = $db->escape_string(preg_replace("/[^A-Za-z0-9]/", "", $address));
+	$signature = $db->escape_string(preg_replace("/[^A-Za-z0-9=+-\/]/", "", $signature));
 			
-			if (omnicoin_checkAddress($address)) {
-				$signingmessage = $mybb->settings['bbname'] . " Omnicoin Address Confirmation - User: " . $mybb->user['username'] . " UID: " . $mybb->user['uid'];
-				if (omnicoin_verifyAddress($address, $signingmessage, $signature)) {
-					$db->insert_query("omcaddresses", array("uid" => $mybb->user['uid'], "address" => $address, "date" => date("Y-m-d H:i:s")));
-					//Display success message
-					//$omcerrormessage = "Success!";
-				} else {
-					//Display signature invalid message
-					$omcerrormessage = "Error: Invalid Omnicoin address signature";
-				}
-			} else {
-				//Display address invalid message
-				$omcerrormessage = "Error: Invalid Omnicoin address";
-			}
+	if (omnicoin_checkAddress($address)) {
+		$signingmessage = $mybb->settings['bbname'] . " Omnicoin Address Confirmation - User: " . $mybb->user['username'] . " UID: " . $mybb->user['uid'];
+		if (omnicoin_verifyAddress($address, $signingmessage, $signature)) {
+			$db->insert_query("omcaddresses", array("uid" => $mybb->user['uid'], "address" => $address, "date" => date("Y-m-d H:i:s")));
+			//Display success message
+			//$omcerrormessage = "Success!";
+		} else {
+			//Display signature invalid message
+			$omcerrormessage = "Error: Invalid Omnicoin address signature";
 		}
+	} else {
+		//Display address invalid message
+		$omcerrormessage = "Error: Invalid Omnicoin address";
+	}
 		
-		if ($omcerrormessage != "") {
-			echo "<script language='javascript'>";
-			echo "alert('" . $omcerrormessage . "')";
-			echo "</script>";
-		}
+	if ($omcerrormessage != "") {
+		echo "<script language='javascript'>";
+		echo "alert('" . $omcerrormessage . "')";
+		echo "</script>";
 	}
 }
 
