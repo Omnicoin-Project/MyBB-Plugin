@@ -144,4 +144,3 @@ if (isset($mybb->input['action'])) {
 	eval("\$page=\"" . $template . "\";");
 	output_page($page);	
 }
-?>
